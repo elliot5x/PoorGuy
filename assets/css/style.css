@@ -391,6 +391,11 @@ footer nav a:hover {
     height: 660px;
     text-align: left;
 }
+.tinder-preview-title {
+    margin: 0 0 18px;
+    font-size: 20px;
+    text-align: center;
+}
 .tinder-stack {
     position: relative;
     width: 390px;
@@ -453,6 +458,18 @@ footer nav a:hover {
 .tinder-preview-actions .tinder-support { color: var(--green); }
 .tinder-preview-actions button:hover { transform: translateY(-3px) scale(1.04); background: var(--surface-2); }
 .tinder-wheel-hint { margin: 11px 0 0; color: var(--muted); font-size: 10px; text-align: center; }
+.tinder-preview.is-complete .tinder-wheel-hint { color: var(--green); font-weight: 700; }
+.tinder-preview.is-complete .tinder-stack::after {
+    content: "Todos os perfis ilustrativos vistos";
+    position: absolute;
+    inset: 25% 0 auto;
+    padding: 22px;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    color: var(--text);
+    background: rgba(13,14,18,.94);
+    text-align: center;
+}
 
 .intro-section {
     max-width: 790px;
