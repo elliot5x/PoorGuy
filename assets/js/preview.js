@@ -69,6 +69,15 @@ const deck = document.querySelector(".deck");
 const deckStatus = document.querySelector(".deck-status");
 let currentIndex = 0;
 
+const payButton = document.querySelector(".deck-button.pay");
+
+function updatePayButton() {
+    const profile = profiles[currentIndex];
+    payButton.disabled = Boolean(profile?.paid);
+    payButton.setAttribute("aria-label", profile?.paid ? "Conta já paga" : "Pagar conta ilustrativa");
+    payButton.querySelector("span").textContent = profile?.paid ? "Pago" : "Pagar";
+}
+
 function renderCards() {
     deck.replaceChildren();
     profiles.map((profile, index) => ({
@@ -106,6 +115,7 @@ function advanceCard(direction) {
     window.setTimeout(() => {
         currentIndex = (currentIndex + direction + profiles.length) % profiles.length;
         renderCards();
+        updatePayButton();
     }, 280);
 }
 
@@ -217,7 +227,8 @@ function trapDialogFocus(event) {
 }
 
 document.querySelector(".deck-button.pay").addEventListener("click", (event) => {
-    if (profiles[currentIndex]) openPayment(profiles[currentIndex], event.currentTarget);
+    const profile = profiles[currentIndex];
+    if (profile && !profile.paid) openPayment(profile, event.currentTarget);
 });
 document.querySelector(".payment-close").addEventListener("click", closePayment);
 document.querySelector(".payment-cancel").addEventListener("click", closePayment);
@@ -229,6 +240,7 @@ document.querySelector(".payment-confirm").addEventListener("click", () => {
     if (!amountIsValid()) return;
     paymentProfile.paid = true;
     renderCards();
+    updatePayButton();
     paymentFormView.hidden = true;
     paymentSuccessView.hidden = false;
     paymentSheet.setAttribute("aria-labelledby", "payment-success-title");
@@ -244,6 +256,7 @@ deckStatus.querySelector("button").addEventListener("click", () => {
     document.querySelector(".deck-actions").hidden = false;
     deckStatus.hidden = true;
     renderCards();
+    updatePayButton();
 });
 
 renderCards();

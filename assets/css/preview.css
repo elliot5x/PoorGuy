@@ -128,7 +128,17 @@ header {
 .card-body p { margin: 18px 0 14px; color: #d5d7dc; line-height: 1.45; }
 .card-tags { display: flex; flex-wrap: wrap; gap: 7px; }
 .card-tags span { padding: 5px 8px; border-radius: 999px; color: var(--blue-light); background: rgba(91,168,228,.08); font-size: 11px; }
-.card-tags .paid-tag { color: #f7f5f2; background: var(--green); font-weight: 800; }
+.card-tags .paid-tag {
+    padding: 8px 12px;
+    border: 1px solid rgba(255,255,255,.28);
+    color: #fff;
+    background: var(--green);
+    box-shadow: 0 0 0 3px rgba(85,166,122,.18), 0 5px 18px rgba(85,166,122,.22);
+    font-size: 13px;
+    font-weight: 900;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+}
 .support-card.is-paid .card-bill { border: 1px solid rgba(255,255,255,.24); }
 .deck-actions { margin-top: 26px; display: flex; justify-content: center; gap: 16px; }
 .deck-button { height: 58px; min-width: 58px; border: 1px solid var(--border); border-radius: 999px; color: var(--text); background: rgba(17,18,24,.88); cursor: pointer; font-size: 30px; transition: transform 180ms ease, background 180ms ease; }
@@ -166,6 +176,15 @@ header {
 .deck-button.pay:hover::before { left: calc(100% + 12px); }
 .deck-button.pay:active { transform: translateY(-1px) scale(.98); box-shadow: 0 7px 18px rgba(216,168,78,.22); }
 .deck-button.pay:focus-visible { outline: 3px solid rgba(91,168,228,.7); outline-offset: 4px; }
+.deck-button.pay:disabled {
+    border-color: rgba(85,166,122,.65);
+    color: #f7f5f2;
+    background: var(--green);
+    box-shadow: none;
+    cursor: not-allowed;
+    transform: none;
+}
+.deck-button.pay:disabled::before { display: none; }
 .payment-overlay[hidden] { display: none; }
 .payment-overlay {
     position: fixed;
