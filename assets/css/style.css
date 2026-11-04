@@ -405,7 +405,7 @@ footer nav a:hover {
 .curiosity-grid {
     position: relative;
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: minmax(0, .92fr) minmax(0, 1.16fr) minmax(0, .92fr);
     gap: 18px;
 }
 .tinder-card {
@@ -429,9 +429,15 @@ footer nav a:hover {
 }
 .curiosity-grid .curiosity-card:nth-child(2) {
     z-index: 2;
-    height: 510px;
+    width: calc(100% + 16px);
+    height: 530px;
+    margin-left: -8px;
     align-self: center;
     box-shadow: 0 28px 70px rgba(216,168,78,.13), 0 0 0 2px rgba(216,168,78,.58);
+}
+.curiosity-card.is-flipped .curiosity-paid-tag {
+    visibility: hidden;
+    opacity: 0;
 }
 .curiosity-grid .curiosity-card:nth-child(2) .curiosity-paid-tag {
     position: absolute;
@@ -857,11 +863,13 @@ footer nav a { text-decoration: none; }
         margin-left: auto;
         transform: none;
     }
-    .curiosity-grid { grid-template-columns: 1fr; height: auto; }
+    .curiosity-grid { grid-template-columns: 1fr; height: auto; gap: 22px; }
     .curiosity-card { height: 430px; }
     .curiosity-grid .curiosity-card:nth-child(2) {
         z-index: 2;
+        width: calc(100% + 18px);
         height: 462px;
+        margin-left: -9px;
         align-self: center;
         box-shadow: 0 28px 70px rgba(216,168,78,.13), 0 0 0 2px rgba(216,168,78,.58);
     }
