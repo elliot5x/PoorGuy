@@ -721,6 +721,33 @@ footer { padding: 55px 16px 30px; display: grid; justify-items: center; gap: 8px
 footer p, footer small, footer nav a { color: var(--muted); font-size: 12px; }
 footer nav { display: flex; gap: 22px; }
 footer nav a { text-decoration: none; }
+.legal-page {
+    width: min(820px, calc(100% - 32px));
+    margin: 0 auto;
+    padding: 150px 0 120px;
+}
+.legal-page h1 { margin: 12px 0 18px; font-size: clamp(3rem, 7vw, 5rem); letter-spacing: -.055em; }
+.legal-updated { color: var(--muted); }
+.legal-content { margin-top: 55px; }
+.legal-content h2 { margin-top: 42px; font-size: 22px; }
+.legal-content p { color: var(--muted); line-height: 1.75; }
+.legal-content a { color: var(--blue-light); }
+.creator-card {
+    padding: 42px;
+    display: grid;
+    grid-template-columns: 190px 1fr;
+    align-items: center;
+    gap: 42px;
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    background: rgba(13,14,18,.82);
+    box-shadow: 0 35px 90px rgba(0,0,0,.38);
+}
+.creator-avatar { width: 190px; height: 190px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,.12); }
+.creator-card h1 { margin-top: 14px; font-size: clamp(2.2rem, 5vw, 4rem); }
+.creator-card p { color: var(--muted); line-height: 1.65; }
+.creator-github { margin-top: 8px; min-height: 48px; padding: 0 18px; display: inline-flex; align-items: center; gap: 10px; border-radius: 10px; color: #17140b; background: var(--gold); font-weight: 800; text-decoration: none; }
+.creator-github:hover { transform: translateY(-2px); }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
 
 @media (max-width: 800px) {
@@ -793,6 +820,7 @@ footer nav a { text-decoration: none; }
     .waitlist button { min-height: 48px; }
     .faq-list summary { gap: 16px; line-height: 1.35; }
     footer nav { flex-wrap: wrap; justify-content: center; gap: 12px 18px; }
+    .creator-card { grid-template-columns: 1fr; justify-items: center; padding: 28px; text-align: center; }
 }
 
 @media (max-width: 380px) {
