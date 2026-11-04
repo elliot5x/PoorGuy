@@ -114,7 +114,19 @@ header {
 .support-heading > p { font-size: 14px; }
 .deck-wrap { width: min(430px, 100%); margin: 0 auto; }
 .deck { position: relative; height: 520px; perspective: 1200px; }
-.support-card { position: absolute; inset: 0; overflow: hidden; border: 1px solid var(--border); border-radius: 22px; background: var(--surface-2); box-shadow: 0 30px 80px rgba(0,0,0,.48); transform-origin: 50% 100%; touch-action: none; transition: transform 280ms cubic-bezier(.22,1,.36,1), opacity 280ms ease; }
+.support-card { position: absolute; inset: 0; overflow: hidden; border: 1px solid var(--border); border-radius: 22px; background: var(--surface-2); box-shadow: 0 30px 80px rgba(0,0,0,.48); transform-origin: 50% 100%; touch-action: none; transition: transform 280ms cubic-bezier(.22,1,.36,1), opacity 280ms ease; perspective: 1200px; }
+.support-card-inner { position: absolute; inset: 0; transform-style: preserve-3d; transition: transform 650ms cubic-bezier(.2,.75,.25,1); }
+.support-card.is-flipped .support-card-inner { transform: rotateY(180deg); }
+.support-card-face { position: absolute; inset: 0; overflow: hidden; border-radius: inherit; backface-visibility: hidden; }
+.support-card-back { display: flex; flex-direction: column; justify-content: center; padding: 38px; background: linear-gradient(145deg, rgba(91,168,228,.18), rgba(13,14,18,.98) 58%), rgba(13,14,18,.98); backdrop-filter: blur(18px); transform: rotateY(180deg); }
+.support-card-back h2 { margin: 12px 0 8px; font-size: 30px; }
+.payment-total { color: var(--gold); font-size: 42px; }
+.support-card-back p { margin: 18px 0; color: var(--muted); line-height: 1.5; }
+.support-card-back > small { margin-top: 16px; color: var(--blue-light); }
+.payment-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.payment-options button, .payment-back { min-height: 48px; border: 1px solid var(--border); border-radius: 12px; color: var(--text); background: rgba(255,255,255,.05); cursor: pointer; }
+.payment-options button:hover, .payment-back:hover { border-color: var(--blue); background: rgba(91,168,228,.12); }
+.payment-back { margin-top: 12px; }
 .support-card:nth-child(2) { transform: scale(.965) translateY(12px); opacity: .72; }
 .support-card:nth-child(3) { transform: scale(.93) translateY(24px); opacity: .42; }
 .card-cover { height: 250px; display: grid; place-items: center; background: radial-gradient(circle at 50% 35%, rgba(91,168,228,.22), transparent 52%), linear-gradient(145deg, #1c2530, #111218); }
@@ -127,8 +139,8 @@ header {
 .card-tags { display: flex; flex-wrap: wrap; gap: 7px; }
 .card-tags span { padding: 5px 8px; border-radius: 999px; color: var(--blue-light); background: rgba(91,168,228,.08); font-size: 11px; }
 .deck-actions { margin-top: 26px; display: flex; justify-content: center; gap: 16px; }
-.deck-button { width: 58px; height: 58px; border: 1px solid var(--border); border-radius: 50%; color: var(--text); background: rgba(17,18,24,.88); cursor: pointer; font-size: 30px; transition: transform 180ms ease, background 180ms ease; }
-.deck-button.support { color: var(--green); }
+.deck-button { height: 58px; min-width: 58px; border: 1px solid var(--border); border-radius: 999px; color: var(--text); background: rgba(17,18,24,.88); cursor: pointer; font-size: 30px; transition: transform 180ms ease, background 180ms ease; }
+.deck-button.pay { min-width: 94px; padding: 0 18px; color: #17140b; background: var(--gold); font-size: 14px; font-weight: 800; }
 .deck-button:hover { transform: translateY(-4px) scale(1.04); background: var(--surface-2); }
 .deck-status { margin-top: 28px; text-align: center; }
 .deck-status span { display: block; margin-bottom: 14px; color: var(--muted); }

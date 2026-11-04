@@ -77,14 +77,30 @@ function renderCards() {
         card.className = "support-card";
         card.style.zIndex = String(profiles.length - index);
         card.innerHTML = `
-            <div class="card-cover"><div class="card-avatar">${profile.initials}</div></div>
-            <div class="card-body">
-                <span class="card-bill">${profile.bill}</span>
-                <span class="eyebrow">${profile.category}</span>
-                <h2>${profile.name}</h2>
-                <small>Solicitação ilustrativa</small>
-                <p>${profile.message}</p>
-                <div class="card-tags">${profile.tags.map((tag) => `<span>${tag}</span>`).join("")}</div>
+            <div class="support-card-inner">
+                <div class="support-card-face support-card-front">
+                    <div class="card-cover"><div class="card-avatar">${profile.initials}</div></div>
+                    <div class="card-body">
+                        <span class="card-bill">${profile.bill}</span>
+                        <span class="eyebrow">${profile.category}</span>
+                        <h2>${profile.name}</h2>
+                        <small>Solicitação ilustrativa</small>
+                        <p>${profile.message}</p>
+                        <div class="card-tags">${profile.tags.map((tag) => `<span>${tag}</span>`).join("")}</div>
+                    </div>
+                </div>
+                <div class="support-card-face support-card-back">
+                    <span class="eyebrow">Forma de pagamento</span>
+                    <h2>${profile.category}</h2>
+                    <strong class="payment-total">${profile.bill}</strong>
+                    <p>Nesta demonstração, escolha como a conta ilustrativa seria paga.</p>
+                    <div class="payment-options" aria-label="Opções ilustrativas de pagamento">
+                        <button type="button">Pix</button>
+                        <button type="button">Cartão</button>
+                    </div>
+                    <small>Nenhum pagamento será realizado.</small>
+                    <button class="payment-back" type="button">Voltar ao perfil</button>
+                </div>
             </div>`;
         makeDraggable(card);
         deck.append(card);
@@ -113,6 +129,7 @@ function makeDraggable(card) {
     let dragging = false;
 
     card.addEventListener("pointerdown", (event) => {
+        if (event.target.closest("button")) return;
         if (card !== deck.querySelector(".support-card")) return;
         dragging = true;
         startX = event.clientX;
@@ -137,7 +154,17 @@ function makeDraggable(card) {
 }
 
 document.querySelector(".deck-button.pass").addEventListener("click", () => advanceCard(-1));
-document.querySelector(".deck-button.support").addEventListener("click", () => advanceCard(1));
+document.querySelector(".deck-button.pay").addEventListener("click", () => {
+    const activeCard = deck.querySelector(".support-card");
+    if (!activeCard) return;
+    activeCard.classList.add("is-flipped");
+});
+
+deck.addEventListener("click", (event) => {
+    const backButton = event.target.closest(".payment-back");
+    if (!backButton) return;
+    backButton.closest(".support-card").classList.remove("is-flipped");
+});
 deckStatus.querySelector("button").addEventListener("click", () => {
     currentIndex = 0;
     deck.hidden = false;
