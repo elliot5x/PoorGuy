@@ -193,10 +193,26 @@
             <span class="eyebrow">Pré-lançamento</span>
             <h2>Ajude a construir uma forma de apoio mais humana.</h2>
             <p>Cadastre seu e-mail para acompanhar o lançamento, as regras de participação e as primeiras oportunidades.</p>
-            <form>
-                <label class="sr-only" for="email">Seu e-mail</label>
-                <input id="email" type="email" placeholder="Seu melhor e-mail" required>
-                <button type="submit">Entrar na lista <span>→</span></button>
+            <form class="waitlist-form" novalidate>
+                <div class="waitlist-fields">
+                    <label class="sr-only" for="email">Seu e-mail</label>
+                    <input id="email" name="email" type="email" autocomplete="email" placeholder="Seu melhor e-mail" required>
+                    <button type="submit">Entrar na lista <span aria-hidden="true">→</span></button>
+                </div>
+                <fieldset class="waitlist-interest">
+                    <legend>Tenho interesse em</legend>
+                    <label><input type="radio" name="interest" value="request_support"> Quero pedir apoio</label>
+                    <label><input type="radio" name="interest" value="support_others"> Quero ser apoiador</label>
+                </fieldset>
+                <label class="waitlist-consent">
+                    <input type="checkbox" name="consent" value="yes" required>
+                    <span>Li e concordo com o uso do meu e-mail conforme a <a href="privacidade.html">Política de Privacidade</a>.</span>
+                </label>
+                <div class="waitlist-honeypot" aria-hidden="true">
+                    <label for="website">Não preencher este campo</label>
+                    <input id="website" name="website" type="text" tabindex="-1" autocomplete="off">
+                </div>
+                <p class="waitlist-status" aria-live="polite" aria-atomic="true"></p>
             </form>
         </section>
     </main>
@@ -213,5 +229,6 @@
         <small>© 2026 PoorGuy. Todos os direitos reservados.</small>
     </footer>
     <script src="assets/js/theme-and-cards.js"></script>
+    <script src="assets/js/waitlist.js"></script>
 </body>
 </html>
