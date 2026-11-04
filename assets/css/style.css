@@ -387,6 +387,73 @@ footer nav a:hover {
 .activity-item strong, .activity-item small { display: block; }
 .activity-item small { margin-top: 2px; color: var(--muted); font-size: 10px; }
 
+.tinder-preview {
+    height: 660px;
+    text-align: left;
+}
+.tinder-stack {
+    position: relative;
+    width: 390px;
+    height: 510px;
+    margin: 0 auto;
+}
+.tinder-card {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 20px;
+    background: var(--surface-2);
+    box-shadow: 0 32px 90px rgba(0,0,0,.5);
+    transform-origin: 50% 100%;
+    transition: transform 520ms cubic-bezier(.22, 1, .36, 1), opacity 420ms ease, filter 420ms ease;
+    will-change: transform, opacity;
+}
+.tinder-card:nth-child(1) { z-index: 3; }
+.tinder-card:nth-child(2) { z-index: 2; transform: scale(.965) translateY(12px); opacity: .78; }
+.tinder-card:nth-child(3) { z-index: 1; transform: scale(.93) translateY(24px); opacity: .48; }
+.tinder-card.is-leaving { opacity: 0; filter: blur(3px); transform: translateY(105px) scale(.94); }
+.tinder-card-cover {
+    height: 235px;
+    display: grid;
+    place-items: center;
+    background: radial-gradient(circle at 50% 35%, rgba(91,168,228,.24), transparent 52%), linear-gradient(145deg, #1c2530, #111218);
+}
+.tinder-avatar {
+    width: 108px;
+    height: 108px;
+    display: grid;
+    place-items: center;
+    border: 1px solid rgba(255,255,255,.14);
+    border-radius: 50%;
+    color: var(--text);
+    background: rgba(8,9,12,.5);
+    font-size: 42px;
+}
+.tinder-card-body { position: relative; padding: 20px 22px; }
+.tinder-card-body .eyebrow { display: block; font-size: 10px; }
+.tinder-card-body h2 { margin: 5px 0 2px; font-size: 27px; }
+.tinder-card-body small { color: var(--muted); }
+.tinder-card-body p { margin: 14px 0 12px; color: #d5d7dc; font-size: 13px; line-height: 1.45; }
+.tinder-amount { position: absolute; top: -16px; right: 18px; padding: 8px 12px; border-radius: 999px; color: #17140b; background: var(--gold); font-weight: 800; }
+.tinder-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.tinder-tags span { padding: 5px 8px; border-radius: 999px; color: var(--blue-light); background: rgba(91,168,228,.08); font-size: 10px; }
+.tinder-preview-actions { margin-top: 18px; display: flex; justify-content: center; gap: 14px; }
+.tinder-preview-actions button {
+    width: 54px;
+    height: 54px;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    color: var(--text);
+    background: rgba(17,18,24,.92);
+    cursor: pointer;
+    font-size: 28px;
+    transition: transform 180ms ease, background 180ms ease;
+}
+.tinder-preview-actions .tinder-support { color: var(--green); }
+.tinder-preview-actions button:hover { transform: translateY(-3px) scale(1.04); background: var(--surface-2); }
+.tinder-wheel-hint { margin: 11px 0 0; color: var(--muted); font-size: 10px; text-align: center; }
+
 .intro-section {
     max-width: 790px;
     margin: 0 auto;
@@ -600,6 +667,7 @@ footer nav a { text-decoration: none; }
     .community-section { padding-top: 110px; padding-bottom: 110px; }
     .waitlist { padding-top: 95px; padding-bottom: 95px; }
     footer { gap: 14px; }
+    .tinder-preview { height: 620px; }
 }
 
 @media (max-width: 520px) {
@@ -624,6 +692,16 @@ footer nav a { text-decoration: none; }
     }
     .hero .product-preview.reveal.is-visible { opacity: 1; }
     .app-window { height: 440px; }
+    .tinder-preview,
+    .hero .tinder-preview.reveal,
+    .hero .tinder-preview.reveal.is-visible {
+        width: min(390px, calc(100vw - 24px));
+        height: 590px;
+        margin-left: auto;
+        transform: none;
+    }
+    .tinder-stack { width: min(390px, calc(100vw - 24px)); height: 470px; }
+    .tinder-card-cover { height: 220px; }
     .intro-section { padding: 100px 16px; }
     .intro-section h2, .feature-copy h2, .story-copy h2, .section-heading h2, .security-copy h2, .faq-heading h2, .waitlist h2 { font-size: 2.55rem; }
     .feature-section, .story-section, .security-section, .faq-section { padding: 90px 0; }

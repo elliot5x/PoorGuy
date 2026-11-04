@@ -76,3 +76,40 @@ if (preview && previewCard && window.matchMedia("(pointer: fine)").matches && wi
     window.addEventListener("scroll", updatePreviewScrollTilt, { passive: true });
     updatePreviewScrollTilt();
 }
+
+const tinderPreview = document.querySelector(".tinder-preview");
+
+if (tinderPreview) {
+    const tinderCards = () => [...tinderPreview.querySelectorAll(".tinder-card:not(.is-leaving)")];
+    let tinderLocked = false;
+
+    function advanceTinderCard(direction = 1) {
+        const cards = tinderCards();
+        const activeCard = cards.shift();
+        if (!activeCard || tinderLocked) return;
+
+        tinderLocked = true;
+        activeCard.classList.add("is-leaving");
+        activeCard.style.transform = `translate(${direction * 115}px, 70px) rotate(${direction * 10}deg) scale(.96)`;
+
+        window.setTimeout(() => {
+            activeCard.style.transform = "";
+            activeCard.classList.remove("is-leaving");
+            tinderPreview.querySelector(".tinder-stack").append(activeCard);
+            cards.forEach((card, index) => {
+                card.style.opacity = "";
+                card.style.transform = "";
+            });
+            tinderLocked = false;
+        }, 520);
+    }
+
+    tinderPreview.addEventListener("wheel", (event) => {
+        if (Math.abs(event.deltaY) < 12 || tinderLocked) return;
+        event.preventDefault();
+        advanceTinderCard(event.deltaY > 0 ? 1 : -1);
+    }, { passive: false });
+
+    tinderPreview.querySelector(".tinder-pass")?.addEventListener("click", () => advanceTinderCard(-1));
+    tinderPreview.querySelector(".tinder-support")?.addEventListener("click", () => advanceTinderCard(1));
+}
