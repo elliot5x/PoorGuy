@@ -80,50 +80,10 @@ if (preview && previewCard && window.matchMedia("(pointer: fine)").matches && wi
 const tinderPreview = document.querySelector(".tinder-preview");
 
 if (tinderPreview) {
-    const tinderCards = () => [...tinderPreview.querySelectorAll(".tinder-card:not(.is-leaving)")];
-    const totalTinderCards = tinderCards().length;
-    let tinderLocked = false;
-    let tinderProgress = 0;
-
-    function advanceTinderCard(direction = 1) {
-        const cards = tinderCards();
-        const activeCard = cards.shift();
-        if (!activeCard || tinderLocked || tinderProgress >= totalTinderCards) return;
-
-        tinderLocked = true;
-        tinderProgress += 1;
-        activeCard.classList.add("is-leaving");
-        activeCard.style.transform = `translate(${direction * 115}px, 70px) rotate(${direction * 10}deg) scale(.96)`;
-
-        window.setTimeout(() => {
-            activeCard.style.transform = "";
-            activeCard.classList.remove("is-leaving");
-
-            if (tinderProgress >= totalTinderCards) {
-                activeCard.remove();
-                cards.forEach((card) => card.remove());
-                tinderPreview.classList.add("is-complete");
-                const hint = tinderPreview.querySelector(".tinder-wheel-hint");
-                if (hint) hint.textContent = "Continue descendo para conhecer a proposta";
-            } else {
-                tinderPreview.querySelector(".tinder-stack").append(activeCard);
-            }
-
-            cards.forEach((card) => {
-                card.style.opacity = "";
-                card.style.transform = "";
-            });
-            tinderLocked = false;
-        }, 520);
-    }
-
-    tinderPreview.addEventListener("wheel", (event) => {
-        if (tinderProgress >= totalTinderCards) return;
-        if (Math.abs(event.deltaY) < 12 || tinderLocked) return;
-        event.preventDefault();
-        advanceTinderCard(event.deltaY > 0 ? 1 : -1);
-    }, { passive: false });
-
-    tinderPreview.querySelector(".tinder-pass")?.addEventListener("click", () => advanceTinderCard(-1));
-    tinderPreview.querySelector(".tinder-support")?.addEventListener("click", () => advanceTinderCard(1));
+    tinderPreview.querySelectorAll(".curiosity-card").forEach((card) => {
+        card.addEventListener("click", () => {
+            const flipped = card.classList.toggle("is-flipped");
+            card.setAttribute("aria-pressed", String(flipped));
+        });
+    });
 }
