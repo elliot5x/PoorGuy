@@ -60,9 +60,9 @@ document.querySelector(".download-qr").addEventListener("click", () => {
 });
 
 const profiles = [
-    { initials: "M", name: "Mariana, 31", bill: "R$ 180", amount: 180, category: "Energia elétrica", reference: "Conta ilustrativa de outubro/2026", message: "Estou tentando regularizar a conta da minha casa e retomar meus estudos com mais tranquilidade.", tags: ["Conta vencida há 12 dias", "Perfil ilustrativo"], demoId: "energia-01" },
-    { initials: "R", name: "Renato, 28", bill: "R$ 240", amount: 240, category: "Internet", reference: "Conta ilustrativa de outubro/2026", message: "Preciso manter a conexão para continuar trabalhando e participar das aulas do curso técnico.", tags: ["Conta vencida há 20 dias", "Perfil ilustrativo"], demoId: "internet-01" },
-    { initials: "L", name: "Luana, 35", bill: "R$ 125", amount: 125, category: "Medicamentos", reference: "Despesa ilustrativa de outubro/2026", message: "Minha intenção é reorganizar uma conta essencial sem expor mais dados do que o necessário.", tags: ["Necessidade comprovada", "Perfil ilustrativo"], demoId: "medicamentos-01" }
+    { initials: "M", name: "Mariana, 31", bill: "R$ 180", amount: 180, category: "Energia elétrica", reference: "Conta ilustrativa de outubro/2026", message: "Estou tentando regularizar a conta da minha casa e retomar meus estudos com mais tranquilidade.", tags: ["Conta vencida há 12 dias", "Perfil ilustrativo"], demoId: "energia-01", paid: false },
+    { initials: "R", name: "Renato, 28", bill: "R$ 240", amount: 240, category: "Internet", reference: "Conta ilustrativa de outubro/2026", message: "Preciso manter a conexão para continuar trabalhando e participar das aulas do curso técnico.", tags: ["Conta vencida há 20 dias", "Perfil ilustrativo"], demoId: "internet-01", paid: false },
+    { initials: "L", name: "Luana, 35", bill: "R$ 125", amount: 125, category: "Medicamentos", reference: "Despesa ilustrativa de outubro/2026", message: "Minha intenção é reorganizar uma conta essencial sem expor mais dados do que o necessário.", tags: ["Necessidade comprovada", "Perfil ilustrativo"], demoId: "medicamentos-01", paid: false }
 ];
 
 const deck = document.querySelector(".deck");
@@ -71,11 +71,13 @@ let currentIndex = 0;
 
 function renderCards() {
     deck.replaceChildren();
-    profiles.forEach((profile, index) => {
-        if (index < currentIndex) return;
+    profiles.map((profile, index) => ({
+        profile,
+        position: (index - currentIndex + profiles.length) % profiles.length
+    })).sort((a, b) => a.position - b.position).forEach(({ profile, position }) => {
         const card = document.createElement("article");
-        card.className = "support-card";
-        card.style.zIndex = String(profiles.length - index);
+        card.className = `support-card${profile.paid ? " is-paid" : ""}`;
+        card.style.zIndex = String(profiles.length - position);
         card.innerHTML = `
             <div class="support-card-inner">
                 <div class="support-card-face support-card-front">
@@ -86,7 +88,7 @@ function renderCards() {
                         <h2>${profile.name}</h2>
                         <small>Solicitação ilustrativa</small>
                         <p>${profile.message}</p>
-                        <div class="card-tags">${profile.tags.map((tag) => `<span>${tag}</span>`).join("")}</div>
+                        <div class="card-tags">${profile.paid ? '<span class="paid-tag">Pago</span>' : ""}${profile.tags.map((tag) => `<span>${tag}</span>`).join("")}</div>
                     </div>
                 </div>
             </div>`;
@@ -102,13 +104,8 @@ function advanceCard(direction) {
     activeCard.style.transform = `translate(${direction * 120}%, 20px) rotate(${direction * 18}deg)`;
     activeCard.style.opacity = "0";
     window.setTimeout(() => {
-        currentIndex += 1;
+        currentIndex = (currentIndex + direction + profiles.length) % profiles.length;
         renderCards();
-        if (currentIndex >= profiles.length) {
-            deck.hidden = true;
-            document.querySelector(".deck-actions").hidden = true;
-            deckStatus.hidden = false;
-        }
     }, 280);
 }
 
@@ -157,8 +154,8 @@ let previousBodyOverflow = "";
 
 function amountIsValid() {
     const value = Number(paymentAmount.value);
-    const valid = Number.isFinite(value) && value >= 1 && value <= 500;
-    paymentAmountError.textContent = valid ? "" : "Informe um valor entre R$ 1 e R$ 500.";
+    const valid = Number.isFinite(value) && paymentProfile && value === paymentProfile.amount;
+    paymentAmountError.textContent = valid ? "" : `O pagamento deve ser exatamente ${paymentProfile?.bill ?? "o valor da conta"}.`;
     paymentAmount.setAttribute("aria-invalid", String(!valid));
     return valid;
 }
@@ -228,15 +225,10 @@ paymentOverlay.addEventListener("click", (event) => {
     if (event.target === paymentOverlay) closePayment();
 });
 paymentSheet.addEventListener("keydown", trapDialogFocus);
-paymentAmount.addEventListener("input", renderPaymentQr);
-document.querySelectorAll(".payment-shortcuts button").forEach((button) => {
-    button.addEventListener("click", () => {
-        paymentAmount.value = button.dataset.amount;
-        renderPaymentQr();
-    });
-});
 document.querySelector(".payment-confirm").addEventListener("click", () => {
     if (!amountIsValid()) return;
+    paymentProfile.paid = true;
+    renderCards();
     paymentFormView.hidden = true;
     paymentSuccessView.hidden = false;
     paymentSheet.setAttribute("aria-labelledby", "payment-success-title");

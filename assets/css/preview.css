@@ -128,6 +128,8 @@ header {
 .card-body p { margin: 18px 0 14px; color: #d5d7dc; line-height: 1.45; }
 .card-tags { display: flex; flex-wrap: wrap; gap: 7px; }
 .card-tags span { padding: 5px 8px; border-radius: 999px; color: var(--blue-light); background: rgba(91,168,228,.08); font-size: 11px; }
+.card-tags .paid-tag { color: #f7f5f2; background: var(--green); font-weight: 800; }
+.support-card.is-paid .card-bill { border: 1px solid rgba(255,255,255,.24); }
 .deck-actions { margin-top: 26px; display: flex; justify-content: center; gap: 16px; }
 .deck-button { height: 58px; min-width: 58px; border: 1px solid var(--border); border-radius: 999px; color: var(--text); background: rgba(17,18,24,.88); cursor: pointer; font-size: 30px; transition: transform 180ms ease, background 180ms ease; }
 .deck-button.pay {
@@ -204,6 +206,8 @@ header {
 .payment-currency-input { display: grid; grid-template-columns: auto 1fr; align-items: center; border: 1px solid var(--border); border-radius: 10px; background: rgba(255,255,255,.03); }
 .payment-currency-input span { padding-left: 14px; color: var(--gold); font-weight: 800; }
 .payment-currency-input input { min-height: 48px; padding: 0 14px 0 8px; border: 0; outline: 0; color: var(--text); background: transparent; font-size: 18px; }
+.payment-currency-input input[readonly] { opacity: 1; cursor: not-allowed; }
+.payment-amount-description { margin: 8px 0 0; color: var(--muted); font-size: 12px; line-height: 1.4; }
 .payment-currency-input:focus-within { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(91,168,228,.12); }
 .payment-amount-error { min-height: 18px; margin: 7px 0 0; color: #f29a9a; font-size: 12px; }
 .payment-qr-section { margin-top: 18px; padding: 14px; display: grid; grid-template-columns: 144px 1fr; align-items: center; gap: 16px; border: 1px solid var(--border); border-radius: 14px; }
