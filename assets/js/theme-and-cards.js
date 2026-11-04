@@ -46,7 +46,7 @@ revealTargets.forEach((element) => revealObserver.observe(element));
 const preview = document.querySelector(".product-preview");
 const previewCard = preview?.querySelector(".app-window");
 
-if (preview && previewCard && window.matchMedia("(pointer: fine)").matches) {
+if (preview && previewCard && window.matchMedia("(pointer: fine)").matches && window.innerWidth > 800) {
     preview.addEventListener("pointermove", (event) => {
         const bounds = preview.getBoundingClientRect();
         const x = (event.clientX - bounds.left) / bounds.width - 0.5;

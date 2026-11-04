@@ -20,6 +20,7 @@ body {
     margin: 0;
     position: relative;
     isolation: isolate;
+    overflow-x: clip;
     color: var(--text);
     background: var(--bg);
     font-family: Inter, "Segoe UI", Arial, sans-serif;
@@ -568,7 +569,10 @@ footer nav a { text-decoration: none; }
 @media (max-width: 800px) {
     .navbar { grid-template-columns: 1fr auto; }
     .nav-links { display: none; }
-    .hero { min-height: 980px; padding-top: 80px; }
+    .navbar { width: min(1120px, calc(100% - 24px)); }
+    .brand img { width: 104px; height: 68px; }
+    .nav-cta { min-height: 40px; display: inline-flex; align-items: center; }
+    .hero { min-height: 930px; padding-top: 70px; }
     .hero h1 { font-size: clamp(3rem, 14vw, 5rem); }
     .product-preview { height: 500px; margin-top: 60px; }
     .app-window { height: 440px; }
@@ -577,22 +581,72 @@ footer nav a { text-decoration: none; }
     .feature-section, .story-section, .security-section, .faq-section { grid-template-columns: 1fr; gap: 55px; }
     .feature-copy { position: static; }
     .benefit-grid { grid-template-columns: 1fr; }
+    .intro-section { padding-top: 110px; padding-bottom: 110px; }
+    .community-section { padding-top: 110px; padding-bottom: 110px; }
+    .waitlist { padding-top: 95px; padding-bottom: 95px; }
+    footer { gap: 14px; }
 }
 
 @media (max-width: 520px) {
     .brand span { display: none; }
+    .brand img { width: 92px; height: 62px; }
     .announcement { font-size: 10px; }
-    .hero { min-height: 860px; padding-top: 65px; }
+    .nav-cta { padding-inline: 10px; font-size: 12px; }
+    .hero { min-height: 760px; padding-top: 52px; }
     .hero h1 { font-size: 3.15rem; }
     .hero-subtitle { font-size: 16px; }
     .hero-actions { flex-direction: column; }
-    .button { justify-content: center; }
-    .product-preview { width: 680px; margin-left: 50%; transform: translateX(-50%) scale(.66); transform-origin: top center; }
+    .hero-actions { width: min(340px, 100%); margin-inline: auto; }
+    .button { min-height: 48px; justify-content: center; }
+    .product-preview,
+    .hero .product-preview.reveal,
+    .hero .product-preview.reveal.is-visible {
+        width: 680px;
+        height: 330px;
+        margin-left: 50%;
+        transform: translateX(-50%) scale(.66);
+        transform-origin: top center;
+    }
+    .hero .product-preview.reveal.is-visible { opacity: 1; }
+    .app-window { height: 440px; }
     .intro-section { padding: 100px 16px; }
     .intro-section h2, .feature-copy h2, .story-copy h2, .section-heading h2, .security-copy h2, .faq-heading h2, .waitlist h2 { font-size: 2.55rem; }
     .feature-section, .story-section, .security-section, .faq-section { padding: 90px 0; }
+    .feature-section, .story-section, .security-section, .faq-section { gap: 40px; }
+    .steps article { min-height: 190px; }
     .panel-header { flex-direction: column; }
     .waitlist form { flex-direction: column; }
+    .waitlist input { min-height: 48px; text-align: center; }
+    .waitlist button { min-height: 48px; }
+    .faq-list summary { gap: 16px; line-height: 1.35; }
+    footer nav { flex-wrap: wrap; justify-content: center; gap: 12px 18px; }
+}
+
+@media (max-width: 380px) {
+    .hero { min-height: 720px; }
+    .hero h1 { font-size: 2.65rem; }
+    .nav-cta span { display: none; }
+    .announcement { gap: 8px; }
+    .announcement span { display: none; }
+    .product-preview,
+    .hero .product-preview.reveal,
+    .hero .product-preview.reveal.is-visible {
+        transform: translateX(-50%) scale(.58);
+    }
+}
+
+@media (hover: none) {
+    .steps article:hover,
+    .benefit-grid article:hover {
+        transform: none;
+        box-shadow: none;
+    }
+
+    .nav-cta:hover::before,
+    .button-secondary:hover::before,
+    .announcement:hover::before {
+        left: -55%;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
