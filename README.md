@@ -41,6 +41,16 @@ python3 -m http.server 4173
 
 Depois, acesse `http://localhost:4173`.
 
+## Preview da rede social
+
+A pagina `preview.html` apresenta uma demonstracao da proposta:
+
+- Publicacao de um link de pagamento para gerar um QR code localmente.
+- Deck de apoio estilo Tinder com perfis ilustrativos.
+- Navegacao por gestos ou pelos botoes de acao.
+
+Nenhum pagamento real ou envio de dados pessoais ocorre nessa demonstracao.
+
 ## Publicacao
 
 O deploy para o GitHub Pages acontece automaticamente quando alteracoes sao enviadas para a branch `main`.
