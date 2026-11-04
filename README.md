@@ -2,11 +2,15 @@
 
 Landing page de pre-lancamento da PoorGuy, uma rede social criada para conectar pessoas com contas atrasadas a uma comunidade de apoio transparente, com selecao aleatoria dos apoiadores.
 
+Projeto criado por um **VibeCoder**, com auxílio de inteligência artificial.
+
 **Site publicado:** https://elliot5x.github.io/PoorGuy/
 
 ## Sobre o projeto
 
 O PoorGuy foi desenvolvido com foco em acolhimento, respeito, simplicidade e transparencia. A interface apresenta a proposta da plataforma, como funciona o processo, informacoes de seguranca, perguntas frequentes e um formulario para entrada na lista de espera.
+
+O site foi desenvolvido com auxilio de ferramentas de inteligencia artificial.
 
 O recebimento de apoio nao representa uma garantia de pagamento.
 
