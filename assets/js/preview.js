@@ -60,9 +60,9 @@ document.querySelector(".download-qr").addEventListener("click", () => {
 });
 
 const profiles = [
-    { initials: "M", name: "Mariana, 31", bill: "R$ 180", category: "Energia elétrica", reference: "Conta ilustrativa de outubro/2026", message: "Estou tentando regularizar a conta da minha casa e retomar meus estudos com mais tranquilidade.", tags: ["Conta vencida há 12 dias", "Perfil ilustrativo"], demoId: "energia-01" },
-    { initials: "R", name: "Renato, 28", bill: "R$ 240", category: "Internet", reference: "Conta ilustrativa de outubro/2026", message: "Preciso manter a conexão para continuar trabalhando e participar das aulas do curso técnico.", tags: ["Conta vencida há 20 dias", "Perfil ilustrativo"], demoId: "internet-01" },
-    { initials: "L", name: "Luana, 35", bill: "R$ 125", category: "Medicamentos", reference: "Despesa ilustrativa de outubro/2026", message: "Minha intenção é reorganizar uma conta essencial sem expor mais dados do que o necessário.", tags: ["Necessidade comprovada", "Perfil ilustrativo"], demoId: "medicamentos-01" }
+    { initials: "M", name: "Mariana, 31", bill: "R$ 180", amount: 180, category: "Energia elétrica", reference: "Conta ilustrativa de outubro/2026", message: "Estou tentando regularizar a conta da minha casa e retomar meus estudos com mais tranquilidade.", tags: ["Conta vencida há 12 dias", "Perfil ilustrativo"], demoId: "energia-01" },
+    { initials: "R", name: "Renato, 28", bill: "R$ 240", amount: 240, category: "Internet", reference: "Conta ilustrativa de outubro/2026", message: "Preciso manter a conexão para continuar trabalhando e participar das aulas do curso técnico.", tags: ["Conta vencida há 20 dias", "Perfil ilustrativo"], demoId: "internet-01" },
+    { initials: "L", name: "Luana, 35", bill: "R$ 125", amount: 125, category: "Medicamentos", reference: "Despesa ilustrativa de outubro/2026", message: "Minha intenção é reorganizar uma conta essencial sem expor mais dados do que o necessário.", tags: ["Necessidade comprovada", "Perfil ilustrativo"], demoId: "medicamentos-01" }
 ];
 
 const deck = document.querySelector(".deck");
@@ -180,7 +180,8 @@ function openPayment(profile, trigger) {
     paymentTitle.textContent = `${profile.category} — pagamento ilustrativo`;
     document.querySelector("#payment-category").textContent = profile.category;
     document.querySelector("#payment-reference").textContent = profile.reference;
-    paymentAmount.value = "10";
+    document.querySelector("#payment-bill-value").textContent = profile.bill;
+    paymentAmount.value = String(profile.amount);
     paymentFormView.hidden = false;
     paymentSuccessView.hidden = true;
     paymentSheet.setAttribute("aria-labelledby", "payment-title");
