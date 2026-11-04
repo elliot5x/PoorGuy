@@ -427,6 +427,28 @@ footer nav a:hover {
     transform-style: preserve-3d;
     text-align: left;
 }
+.curiosity-grid .curiosity-card:nth-child(2) {
+    z-index: 2;
+    height: 510px;
+    align-self: center;
+    box-shadow: 0 28px 70px rgba(216,168,78,.13), 0 0 0 2px rgba(216,168,78,.58);
+}
+.curiosity-grid .curiosity-card:nth-child(2) .curiosity-paid-tag {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 4;
+    padding: 8px 13px;
+    border: 1px solid rgba(255,255,255,.35);
+    border-radius: 999px;
+    color: #fff;
+    background: var(--green);
+    box-shadow: 0 5px 18px rgba(85,166,122,.34);
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
 .curiosity-card:hover,
 .curiosity-card:focus-visible {
     transform: translateY(-10px);
@@ -837,6 +859,28 @@ footer nav a { text-decoration: none; }
     }
     .curiosity-grid { grid-template-columns: 1fr; height: auto; }
     .curiosity-card { height: 430px; }
+    .curiosity-grid .curiosity-card:nth-child(2) {
+        z-index: 2;
+        height: 462px;
+        align-self: center;
+        box-shadow: 0 28px 70px rgba(216,168,78,.13), 0 0 0 2px rgba(216,168,78,.58);
+    }
+    .curiosity-grid .curiosity-card:nth-child(2) .curiosity-paid-tag {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        z-index: 4;
+        padding: 8px 13px;
+        border: 1px solid rgba(255,255,255,.35);
+        border-radius: 999px;
+        color: #fff;
+        background: var(--green);
+        box-shadow: 0 5px 18px rgba(85,166,122,.34);
+        font-size: 12px;
+        font-weight: 900;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+    }
     .curiosity-card-front .tinder-card-cover { height: 220px; }
     .intro-section { padding: 100px 16px; }
     .intro-section h2, .feature-copy h2, .story-copy h2, .section-heading h2, .security-copy h2, .faq-heading h2, .waitlist h2 { font-size: 2.55rem; }
