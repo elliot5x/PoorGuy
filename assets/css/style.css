@@ -696,10 +696,42 @@ footer nav a:hover {
 .waitlist-interest { margin: 18px 0 0; padding: 0; border: 0; }
 .waitlist-interest legend { margin-bottom: 10px; color: var(--text); font-size: 12px; font-weight: 700; }
 .waitlist-interest-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.waitlist-interest-options label { position: relative; min-height: 74px; padding: 14px 14px 14px 44px; border: 1px solid var(--border); border-radius: 11px; color: var(--text); cursor: pointer; transition: border-color 180ms ease, background 180ms ease, transform 180ms ease; }
-.waitlist-interest-options label:hover { transform: translateY(-2px); border-color: rgba(91,168,228,.45); }
-.waitlist-interest-options label:has(input:checked) { border-color: var(--blue-light); background: rgba(91,168,228,.09); }
-.waitlist-interest-options input { position: absolute; top: 17px; left: 16px; accent-color: var(--gold); }
+.waitlist-interest-options label {
+    position: relative;
+    min-height: 82px;
+    padding: 16px 16px 16px 50px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: 13px;
+    color: var(--text);
+    background: linear-gradient(145deg, rgba(255,255,255,.035), rgba(255,255,255,.012));
+    cursor: pointer;
+    transition: border-color 220ms ease, background 220ms ease, transform 220ms ease, box-shadow 220ms ease;
+}
+.waitlist-interest-options label::after {
+    content: "";
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    right: -85px;
+    bottom: -75px;
+    border-radius: 50%;
+    background: rgba(91,168,228,.12);
+    transition: transform 260ms ease, background 260ms ease;
+}
+.waitlist-interest-options label:hover {
+    transform: translateY(-4px);
+    border-color: rgba(91,168,228,.58);
+    box-shadow: 0 14px 34px rgba(0,0,0,.22);
+}
+.waitlist-interest-options label:hover::after { transform: scale(1.65); background: rgba(91,168,228,.18); }
+.waitlist-interest-options label:has(input:checked) {
+    border-color: var(--blue-light);
+    background: linear-gradient(145deg, rgba(91,168,228,.16), rgba(91,168,228,.055));
+    box-shadow: 0 0 0 1px rgba(91,168,228,.12), 0 12px 34px rgba(91,168,228,.08);
+}
+.waitlist-interest-options label:has(input:focus-visible) { outline: 3px solid rgba(91,168,228,.5); outline-offset: 3px; }
+.waitlist-interest-options input { position: absolute; width: 18px; height: 18px; top: 19px; left: 18px; margin: 0; accent-color: var(--gold); }
 .waitlist-interest-options strong, .waitlist-interest-options small { display: block; }
 .waitlist-interest-options strong { font-size: 13px; }
 .waitlist-interest-options small { margin-top: 5px; color: var(--muted); font-size: 11px; line-height: 1.35; }
