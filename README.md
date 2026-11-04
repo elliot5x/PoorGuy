@@ -25,6 +25,12 @@ O recebimento de apoio nao representa uma garantia de pagamento.
 │   ├── css/
 │   ├── images/
 │   └── js/
+├── pages/
+│   ├── legal/
+│   │   ├── contato.html
+│   │   ├── privacidade.html
+│   │   └── termos.html
+│   └── preview.html
 ├── .github/workflows/
 ├── index.html
 ├── .gitignore
@@ -43,7 +49,7 @@ Depois, acesse `http://localhost:4173`.
 
 ## Preview da rede social
 
-A pagina `preview.html` apresenta uma demonstracao da proposta:
+A pagina `pages/preview.html` apresenta uma demonstracao da proposta:
 
 - Publicacao de um link de pagamento para gerar um QR code localmente.
 - Deck de apoio estilo Tinder com perfis ilustrativos.
