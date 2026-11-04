@@ -81,6 +81,51 @@
         </section>
     </main>
 
+    <div class="payment-overlay" hidden>
+        <section class="payment-sheet" role="dialog" aria-modal="true" aria-labelledby="payment-title">
+            <button class="payment-close" type="button" aria-label="Fechar pagamento">×</button>
+            <div class="payment-view payment-form-view">
+                <span class="eyebrow">Pagamento ilustrativo</span>
+                <h2 id="payment-title" tabindex="-1"></h2>
+                <p class="payment-demo-warning">Demonstração: nenhum pagamento real é feito e nenhum dado é enviado.</p>
+                <dl class="payment-summary">
+                    <div><dt>Conta</dt><dd id="payment-category"></dd></div>
+                    <div><dt>Referência</dt><dd id="payment-reference"></dd></div>
+                    <div><dt>Status</dt><dd><span class="payment-status-dot"></span> Solicitação ilustrativa</dd></div>
+                </dl>
+                <fieldset class="payment-amount-fieldset">
+                    <legend>Valor da contribuição</legend>
+                    <div class="payment-shortcuts">
+                        <button type="button" data-amount="10">R$ 10</button>
+                        <button type="button" data-amount="25">R$ 25</button>
+                        <button type="button" data-amount="50">R$ 50</button>
+                    </div>
+                    <label for="payment-amount">Outro valor</label>
+                    <div class="payment-currency-input">
+                        <span>R$</span>
+                        <input id="payment-amount" type="number" inputmode="decimal" min="1" max="500" step="0.01" value="10">
+                    </div>
+                    <p class="payment-amount-error" role="alert"></p>
+                </fieldset>
+                <div class="payment-qr-section">
+                    <div class="payment-qr" aria-label="QR code ilustrativo do pagamento"></div>
+                    <div><strong>QR ilustrativo</strong><p>Gerado apenas neste dispositivo.</p></div>
+                </div>
+                <div class="payment-actions">
+                    <button class="payment-cancel" type="button">Cancelar</button>
+                    <button class="payment-confirm" type="button">Confirmar pagamento simulado</button>
+                </div>
+            </div>
+            <div class="payment-view payment-success-view" hidden>
+                <div class="payment-success-icon" aria-hidden="true">✓</div>
+                <span class="eyebrow">Simulação concluída</span>
+                <h2 id="payment-success-title" tabindex="-1">Pagamento simulado. Nenhum valor foi cobrado.</h2>
+                <p>Este perfil é ilustrativo e a experiência não realizou nenhuma transação.</p>
+                <button class="payment-next" type="button">Voltar ao próximo perfil</button>
+            </div>
+        </section>
+    </div>
+
     <footer>
         <a class="footer-brand" href="../index.html#topo"><img src="../assets/images/logo-white.png" alt=""><span>PoorGuy</span></a>
         <p>Apoio financeiro com transparência e respeito.</p>

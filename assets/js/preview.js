@@ -60,9 +60,9 @@ document.querySelector(".download-qr").addEventListener("click", () => {
 });
 
 const profiles = [
-    { initials: "M", name: "Mariana, 31", bill: "R$ 180", category: "Energia elétrica", message: "Estou tentando regularizar a conta da minha casa e retomar meus estudos com mais tranquilidade.", tags: ["Conta vencida há 12 dias", "Perfil ilustrativo"] },
-    { initials: "R", name: "Renato, 28", bill: "R$ 240", category: "Internet", message: "Preciso manter a conexão para continuar trabalhando e participar das aulas do curso técnico.", tags: ["Conta vencida há 20 dias", "Perfil ilustrativo"] },
-    { initials: "L", name: "Luana, 35", bill: "R$ 125", category: "Medicamentos", message: "Minha intenção é reorganizar uma conta essencial sem expor mais dados do que o necessário.", tags: ["Necessidade comprovada", "Perfil ilustrativo"] }
+    { initials: "M", name: "Mariana, 31", bill: "R$ 180", category: "Energia elétrica", reference: "Conta ilustrativa de outubro/2026", message: "Estou tentando regularizar a conta da minha casa e retomar meus estudos com mais tranquilidade.", tags: ["Conta vencida há 12 dias", "Perfil ilustrativo"], demoId: "energia-01" },
+    { initials: "R", name: "Renato, 28", bill: "R$ 240", category: "Internet", reference: "Conta ilustrativa de outubro/2026", message: "Preciso manter a conexão para continuar trabalhando e participar das aulas do curso técnico.", tags: ["Conta vencida há 20 dias", "Perfil ilustrativo"], demoId: "internet-01" },
+    { initials: "L", name: "Luana, 35", bill: "R$ 125", category: "Medicamentos", reference: "Despesa ilustrativa de outubro/2026", message: "Minha intenção é reorganizar uma conta essencial sem expor mais dados do que o necessário.", tags: ["Necessidade comprovada", "Perfil ilustrativo"], demoId: "medicamentos-01" }
 ];
 
 const deck = document.querySelector(".deck");
@@ -88,18 +88,6 @@ function renderCards() {
                         <p>${profile.message}</p>
                         <div class="card-tags">${profile.tags.map((tag) => `<span>${tag}</span>`).join("")}</div>
                     </div>
-                </div>
-                <div class="support-card-face support-card-back">
-                    <span class="eyebrow">Forma de pagamento</span>
-                    <h2>${profile.category}</h2>
-                    <strong class="payment-total">${profile.bill}</strong>
-                    <p>Nesta demonstração, escolha como a conta ilustrativa seria paga.</p>
-                    <div class="payment-options" aria-label="Opções ilustrativas de pagamento">
-                        <button type="button">Pix</button>
-                        <button type="button">Cartão</button>
-                    </div>
-                    <small>Nenhum pagamento será realizado.</small>
-                    <button class="payment-back" type="button">Voltar ao perfil</button>
                 </div>
             </div>`;
         makeDraggable(card);
@@ -154,16 +142,108 @@ function makeDraggable(card) {
 }
 
 document.querySelector(".deck-button.pass").addEventListener("click", () => advanceCard(-1));
-document.querySelector(".deck-button.pay").addEventListener("click", () => {
-    const activeCard = deck.querySelector(".support-card");
-    if (!activeCard) return;
-    activeCard.classList.add("is-flipped");
-});
+const paymentOverlay = document.querySelector(".payment-overlay");
+const paymentSheet = document.querySelector(".payment-sheet");
+const paymentTitle = document.querySelector("#payment-title");
+const paymentAmount = document.querySelector("#payment-amount");
+const paymentAmountError = document.querySelector(".payment-amount-error");
+const paymentQr = document.querySelector(".payment-qr");
+const paymentFormView = document.querySelector(".payment-form-view");
+const paymentSuccessView = document.querySelector(".payment-success-view");
+const paymentSuccessTitle = document.querySelector("#payment-success-title");
+let paymentTrigger = null;
+let paymentProfile = null;
+let previousBodyOverflow = "";
 
-deck.addEventListener("click", (event) => {
-    const backButton = event.target.closest(".payment-back");
-    if (!backButton) return;
-    backButton.closest(".support-card").classList.remove("is-flipped");
+function amountIsValid() {
+    const value = Number(paymentAmount.value);
+    const valid = Number.isFinite(value) && value >= 1 && value <= 500;
+    paymentAmountError.textContent = valid ? "" : "Informe um valor entre R$ 1 e R$ 500.";
+    paymentAmount.setAttribute("aria-invalid", String(!valid));
+    return valid;
+}
+
+function renderPaymentQr() {
+    if (!amountIsValid()) {
+        paymentQr.replaceChildren();
+        return;
+    }
+    if (typeof QRCode !== "function") return;
+    paymentQr.replaceChildren();
+    const demoLink = `https://example.invalid/poorguy-demo/${encodeURIComponent(paymentProfile.demoId)}?valor=${encodeURIComponent(paymentAmount.value)}`;
+    new QRCode(paymentQr, { text: demoLink, width: 144, height: 144, colorDark: "#252a2d", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M });
+}
+
+function openPayment(profile, trigger) {
+    paymentProfile = profile;
+    paymentTrigger = trigger;
+    paymentTitle.textContent = `${profile.category} — pagamento ilustrativo`;
+    document.querySelector("#payment-category").textContent = profile.category;
+    document.querySelector("#payment-reference").textContent = profile.reference;
+    paymentAmount.value = "10";
+    paymentFormView.hidden = false;
+    paymentSuccessView.hidden = true;
+    paymentSheet.setAttribute("aria-labelledby", "payment-title");
+    paymentOverlay.hidden = false;
+    previousBodyOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    renderPaymentQr();
+    requestAnimationFrame(() => paymentTitle.focus());
+}
+
+function closePayment() {
+    paymentOverlay.hidden = true;
+    document.body.style.overflow = previousBodyOverflow;
+    paymentTrigger?.focus();
+}
+
+function trapDialogFocus(event) {
+    if (event.key === "Escape") {
+        closePayment();
+        return;
+    }
+    if (event.key !== "Tab") return;
+    const focusable = [...paymentSheet.querySelectorAll('button:not([disabled]), input:not([disabled]), [tabindex="-1"]')]
+        .filter((element) => element.offsetParent !== null && element !== paymentTitle);
+    if (!focusable.length) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (document.activeElement === paymentTitle || document.activeElement === paymentSuccessTitle) {
+        event.preventDefault();
+        (event.shiftKey ? last : first).focus();
+    } else if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault(); last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault(); first.focus();
+    }
+}
+
+document.querySelector(".deck-button.pay").addEventListener("click", (event) => {
+    if (profiles[currentIndex]) openPayment(profiles[currentIndex], event.currentTarget);
+});
+document.querySelector(".payment-close").addEventListener("click", closePayment);
+document.querySelector(".payment-cancel").addEventListener("click", closePayment);
+paymentOverlay.addEventListener("click", (event) => {
+    if (event.target === paymentOverlay) closePayment();
+});
+paymentSheet.addEventListener("keydown", trapDialogFocus);
+paymentAmount.addEventListener("input", renderPaymentQr);
+document.querySelectorAll(".payment-shortcuts button").forEach((button) => {
+    button.addEventListener("click", () => {
+        paymentAmount.value = button.dataset.amount;
+        renderPaymentQr();
+    });
+});
+document.querySelector(".payment-confirm").addEventListener("click", () => {
+    if (!amountIsValid()) return;
+    paymentFormView.hidden = true;
+    paymentSuccessView.hidden = false;
+    paymentSheet.setAttribute("aria-labelledby", "payment-success-title");
+    paymentSuccessTitle.focus();
+});
+document.querySelector(".payment-next").addEventListener("click", () => {
+    closePayment();
+    advanceCard(1);
 });
 deckStatus.querySelector("button").addEventListener("click", () => {
     currentIndex = 0;
