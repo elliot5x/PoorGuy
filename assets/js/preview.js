@@ -8,6 +8,17 @@ modeButtons.forEach((button) => {
             item.classList.toggle("active", selected);
             item.setAttribute("aria-selected", String(selected));
         });
+
+        function activatePreviewMode(mode) {
+            modeButtons.forEach((button) => {
+                const selected = button.dataset.mode === mode;
+                button.classList.toggle("active", selected);
+                button.setAttribute("aria-selected", String(selected));
+            });
+            panels.forEach((panel) => {
+                panel.classList.toggle("active", panel.dataset.panel === mode);
+            });
+        }
         panels.forEach((panel) => panel.classList.toggle("active", panel.dataset.panel === button.dataset.mode));
     });
 });
@@ -100,7 +111,7 @@ document.querySelector(".create-card-button").addEventListener("click", () => {
     if (!randomAccountAmount) randomAccountAmount = randomAmount();
     document.querySelector("#published-card-amount-preview").textContent = `R$ ${randomAccountAmount}`;
     document.querySelector("#published-card-description-preview").textContent = description;
-    preview.hidden = false;
+    preview.hidden = true;
     if (!randomAccountAmount) randomAccountAmount = randomAmount();
 
     const generatedProfile = {
@@ -127,9 +138,10 @@ document.querySelector(".create-card-button").addEventListener("click", () => {
     renderCards();
     updatePayButton();
 
-    const supportButton = document.querySelector('[data-mode="support"]');
-    supportButton.click();
-    document.querySelector(".support-panel").scrollIntoView({ behavior: "smooth", block: "start" });
+    activatePreviewMode("support");
+    requestAnimationFrame(() => {
+        document.querySelector(".support-panel").scrollIntoView({ behavior: "smooth", block: "start" });
+    });
 });
 
 document.querySelector(".download-qr").addEventListener("click", () => {
