@@ -8,6 +8,18 @@ const dashboard = document.querySelector(".admin-dashboard");
 const tableBody = document.querySelector(".admin-table-wrap tbody");
 const stats = document.querySelector(".admin-stats");
 const pagination = document.querySelector(".admin-pagination span");
+let broadcastEnabled = false;
+
+function applyBroadcastStatus(enabled) {
+    broadcastEnabled = enabled;
+    const warning = document.querySelector(".admin-broadcast-status");
+    const sendButtons = campaignForm?.querySelectorAll('[data-broadcast-action="send"]') ?? [];
+    sendButtons.forEach(button => {
+        button.disabled = !enabled;
+        button.hidden = !enabled;
+    });
+    if (warning) warning.hidden = enabled;
+}
 
 async function adminRequest(action, options = {}) {
     const separator = ENDPOINT.includes("?") ? "&" : "?";
@@ -48,6 +60,7 @@ async function loadSubscribers() {
             td.textContent = value;
             tr.append(td);
         });
+        document.querySelector(".admin-table-empty").hidden = data.subscribers.length !== 0;
         const actions = document.createElement("td");
         const remove = document.createElement("button");
         remove.type = "button";
@@ -59,6 +72,8 @@ async function loadSubscribers() {
     });
     stats.textContent = `Total: ${data.counts.total} | Confirmados: ${data.counts.confirmed} | Pendentes: ${data.counts.pending} | Descadastrados: ${data.counts.unsubscribed} | Pedir apoio: ${data.counts.support} | Ajudar alguém: ${data.counts.supporter}`;
     pagination.textContent = `Página ${currentPage}`;
+    const liveUpdated = document.querySelector("[data-live-updated]");
+    if (liveUpdated) liveUpdated.textContent = `· atualizado às ${new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}`;
 }
 
 async function loadTemplates() {
@@ -75,6 +90,7 @@ async function loadTemplates() {
         use.addEventListener("click", () => {
             document.querySelector('[name="subject"]').value = template.subject;
             document.querySelector('[name="body"]').value = template.text_body;
+            campaignForm.dataset.templateId = template.id;
         });
         const duplicate = document.createElement("button");
         duplicate.type = "button";
@@ -91,15 +107,24 @@ async function loadTemplates() {
     });
 }
 
+async function loadStatus() {
+    const status = await adminRequest("status");
+    applyBroadcastStatus(status.broadcastEnabled === true);
+}
+
 loginForm.addEventListener("submit", async event => {
     event.preventEvent?.();
     event.preventDefault();
     loginStatus.textContent = "Verificando...";
+    let response;
     try {
-        const response = await fetch(`${ENDPOINT}?action=admin-login`, {
+        response = await fetch(`${ENDPOINT}?action=admin-login`, {
             method: "POST",
             headers: { Accept: "application/json", "Content-Type": "application/json" },
-            body: JSON.stringify({ password: document.querySelector("#admin-password").value })
+            body: JSON.stringify({
+                username: document.querySelector("#admin-username").value,
+                password: document.querySelector("#admin-password").value
+            })
         });
         if (!response.ok) throw new Error();
         const data = await response.json();
@@ -109,18 +134,60 @@ loginForm.addEventListener("submit", async event => {
         dashboard.hidden = false;
         await loadSubscribers();
         await loadTemplates();
-    } catch {
-        loginStatus.textContent = "Não foi possível acessar. Verifique a senha ou tente novamente.";
+        await loadStatus();
+    } catch (error) {
+        loginStatus.textContent = response?.status === 401
+            ? "Usuário ou senha incorretos."
+            : "Não foi possível acessar. Verifique usuário, senha, implantação e acesso à página.";
     }
 });
 
 document.querySelector('[data-admin-action="logout"]').addEventListener("click", () => {
+    adminRequest("admin-logout", { body: "{}" }).catch(() => {}).finally(() => {
     sessionStorage.removeItem("poorguy_admin_session");
     adminToken = "";
     dashboard.hidden = true;
     loginForm.hidden = false;
     loginForm.reset();
+    });
 });
+
+document.querySelectorAll("[data-admin-tab]").forEach(button => {
+    button.addEventListener("click", async () => {
+        const pane = button.dataset.adminTab;
+        document.querySelectorAll("[data-admin-pane]").forEach(section => {
+            section.hidden = section.dataset.adminPane !== pane;
+        });
+        if (pane === "activity") await loadActivity();
+    });
+});
+
+async function loadActivity() {
+    const status = document.querySelector(".admin-events-status");
+    status.textContent = "Carregando...";
+    try {
+        const data = await adminRequest("admin-events");
+        const body = document.querySelector(".admin-events-wrap tbody");
+        body.replaceChildren();
+        data.events.forEach(event => {
+            const tr = document.createElement("tr");
+            [
+                formatDate(event.created_at),
+                event.event_type,
+                event.result,
+                JSON.stringify(event.metadata ?? {})
+            ].forEach(value => {
+                const td = document.createElement("td");
+                td.textContent = String(value ?? "-");
+                tr.append(td);
+            });
+            body.append(tr);
+        });
+        status.textContent = "";
+    } catch {
+        status.textContent = "Não foi possível carregar a atividade.";
+    }
+}
 
 document.addEventListener("click", async event => {
     const action = event.target.closest("[data-admin-action]")?.dataset.adminAction;
@@ -141,8 +208,9 @@ document.addEventListener("click", async event => {
         window.alert(`${data.get("subject")}\n\n${data.get("body")}`);
     }
     if (action === "send-test") {
+        if (!broadcastEnabled) return;
         const data = new FormData(campaignForm);
-        await adminRequest("admin-send-test", { body: JSON.stringify({ to: data.get("test_email"), subject: data.get("subject"), body: data.get("body") }) });
+        await adminRequest("admin-send-test", { body: JSON.stringify({ to: data.get("test_email"), subject: data.get("subject"), body: data.get("body"), template_id: campaignForm.dataset.templateId ?? null }) });
         campaignForm.querySelector(".admin-campaign-status").textContent = "E-mail de teste enviado.";
     }
     if (action === "export") {
@@ -168,11 +236,12 @@ tableBody.addEventListener("click", async event => {
 const campaignForm = document.querySelector(".admin-campaign");
 campaignForm.addEventListener("submit", async event => {
     event.preventDefault();
+    if (!broadcastEnabled) return;
     const phrase = window.prompt("Para enviar para todos, digite ENVIAR.");
     if (phrase !== "ENVIAR" || !window.confirm("Enviar para N pessoas? Não dá para desfazer.")) return;
     const data = new FormData(campaignForm);
     const result = await adminRequest("admin-send", {
-        body: JSON.stringify({ subject: data.get("subject"), body: data.get("body"), confirmed: true })
+        body: JSON.stringify({ subject: data.get("subject"), body: data.get("body"), confirmed: true, template_id: campaignForm.dataset.templateId ?? null })
     });
     campaignForm.querySelector(".admin-campaign-status").textContent = `${result.total} destinatários: ${result.sentCount} enviados, ${result.failedCount} falhas.`;
 });
@@ -187,4 +256,13 @@ if (adminToken) {
         loginForm.hidden = false;
     });
     loadTemplates().catch(() => {});
+    loadStatus().catch(() => {});
 }
+
+setInterval(() => {
+    if (adminToken && !dashboard.hidden) loadSubscribers().catch(() => {});
+}, 15_000);
+
+document.addEventListener("visibilitychange", () => {
+    if (!document.hidden && adminToken && !dashboard.hidden) loadSubscribers().catch(() => {});
+});

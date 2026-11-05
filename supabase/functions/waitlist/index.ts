@@ -1,3 +1,5 @@
+import { extractClientIp } from "./request_ip.ts";
+
 const defaultCorsHeaders = {
   "Access-Control-Allow-Headers": "authorization, content-type, x-admin-token",
   "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
@@ -9,10 +11,22 @@ const allowedOrigins = new Set([
   ).filter(Boolean)),
 ]);
 
+function originAllowed(origin: string | null) {
+  if (!origin) return true;
+  if (allowedOrigins.has(origin)) return true;
+  try {
+    const url = new URL(origin);
+    return url.protocol === "http:" &&
+      (url.hostname === "localhost" || url.hostname === "127.0.0.1");
+  } catch {
+    return false;
+  }
+}
+
 let currentOrigin: string | null = null;
 
 function corsHeaders(origin: string | null = currentOrigin) {
-  if (!origin || !allowedOrigins.has(origin)) return defaultCorsHeaders;
+  if (!origin || !originAllowed(origin)) return defaultCorsHeaders;
   return { ...defaultCorsHeaders, "Access-Control-Allow-Origin": origin };
 }
 
@@ -26,8 +40,11 @@ const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
 const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
 const resendApiKey = Deno.env.get("RESEND_API_KEY") ?? "";
 const adminPassword = Deno.env.get("ADMIN_PASSWORD") ?? "";
+const adminUsername = Deno.env.get("ADMIN_USERNAME") ?? "";
 const adminSessionSecret = Deno.env.get("ADMIN_SESSION_SECRET") ?? "";
 const unsubscribeSecret = Deno.env.get("UNSUBSCRIBE_SECRET") ?? "";
+const signupEnabled = (Deno.env.get("SIGNUP_ENABLED") ?? "true") !== "false";
+const broadcastEnabled = Deno.env.get("BROADCAST_ENABLED") === "true";
 const emailFrom = Deno.env.get("WAITLIST_EMAIL_FROM") ??
   "PoorGuy <lista@poorguy.com.br>";
 const publicSiteUrl =
@@ -92,7 +109,10 @@ function constantTimeEqual(a: string, b: string) {
 
 async function createAdminSession() {
   const payload = toBase64Url(
-    new TextEncoder().encode(JSON.stringify({ exp: Date.now() + 30 * 60_000 })),
+    new TextEncoder().encode(JSON.stringify({
+      exp: Date.now() + 30 * 60_000,
+      jti: randomToken(),
+    })),
   );
   const signature = toBase64Url(await hmacSha256(adminSessionSecret, payload));
   return `${payload}.${signature}`;
@@ -114,10 +134,62 @@ async function validAdminSession(token: string) {
     const expected = toBase64Url(
       await hmacSha256(adminSessionSecret, parts[0]),
     );
-    return constantTimeEqual(parts[1], expected) &&
-      Number(payload.exp) > Date.now();
+    if (
+      !constantTimeEqual(parts[1], expected) ||
+      Number(payload.exp) <= Date.now() ||
+      typeof payload.jti !== "string" ||
+      !payload.jti
+    ) return false;
+    const revoked = await db(
+      `waitlist_revoked_admin_sessions?jti=eq.${encodeURIComponent(payload.jti)}&select=jti`,
+    );
+    return revoked.length === 0;
   } catch {
     return false;
+  }
+}
+
+async function adminSessionPayload(token: string) {
+  const parts = token.split(".");
+  if (parts.length !== 2) return null;
+  try {
+    return JSON.parse(
+      new TextDecoder().decode(
+        Uint8Array.from(
+          atob(parts[0].replace(/-/g, "+").replace(/_/g, "/")),
+          (character) => character.charCodeAt(0),
+        ),
+      ),
+    );
+  } catch {
+    return null;
+  }
+}
+
+async function recordAdminEvent(
+  req: Request,
+  type: string,
+  result: string,
+  metadata: Record<string, unknown> = {},
+  subscriberId?: string,
+) {
+  try {
+    await db("waitlist_admin_events", {
+      method: "POST",
+      body: JSON.stringify({
+        event_type: type,
+        ip_hash: await shortHash(requestIp(req)),
+        result,
+        metadata,
+        subscriber_id: subscriberId ?? null,
+      }),
+    });
+  } catch (error) {
+    console.log(JSON.stringify({
+      event: "admin_event_record_failed",
+      type,
+      error: String(error),
+    }));
   }
 }
 
@@ -127,8 +199,7 @@ async function createUnsubscribeToken(id: string) {
 }
 
 function requestIp(req: Request) {
-  const forwarded = req.headers.get("x-forwarded-for");
-  return forwarded ? forwarded.split(",")[0].trim().slice(0, 64) : "unknown";
+  return extractClientIp(req.headers);
 }
 
 async function consumeRateLimit(scope: string, value: string, req: Request) {
@@ -161,7 +232,9 @@ async function consumeRateLimit(scope: string, value: string, req: Request) {
     );
     return true;
   }
-  const maximum = scope === "ip" ? 20 : 5;
+  const maximum = scope === "ip"
+    ? (value === "unknown" ? 10 : 20)
+    : 5;
   if (current.attempts >= maximum) return false;
   await db(
     `waitlist_rate_limits?scope=eq.${scope}&scope_hash=eq.${scopeHash}`,
@@ -298,6 +371,7 @@ const neutralSubscriptionResponse = {
 };
 
 async function subscribe(payload: any, req: Request) {
+  if (!signupEnabled) return json(neutralSubscriptionResponse);
   if (
     !payload || typeof payload !== "object" ||
     JSON.stringify(payload).length > 16_384
@@ -481,23 +555,44 @@ async function adminLogin(req: Request) {
     }&select=id`,
   );
   if (ipFailures.length >= 10 || globalFailures.length >= 30) {
+    await recordAdminEvent(req, "admin_login_failed", "failure", {
+      reason: "rate_limited",
+    });
     return json({ error: "temporarily_unavailable" }, 429);
   }
   const payload = await req.json();
   const supplied = String(payload.password ?? "");
+  const suppliedUsername = String(payload.username ?? "").trim();
   const suppliedHash = toBase64Url(
     await hmacSha256("admin-password-check", supplied),
   );
   const expectedHash = toBase64Url(
     await hmacSha256("admin-password-check", adminPassword),
   );
-  if (!adminPassword || !constantTimeEqual(suppliedHash, expectedHash)) {
+  const expectedUsernameHash = toBase64Url(
+    await hmacSha256(
+      "admin-username-check",
+      adminUsername.trim(),
+    ),
+  );
+  const suppliedUsernameHash = toBase64Url(
+    await hmacSha256("admin-username-check", suppliedUsername),
+  );
+  const usernameValid = !adminUsername ||
+    constantTimeEqual(suppliedUsernameHash, expectedUsernameHash);
+  if (
+    !adminPassword || !adminSessionSecret ||
+    !usernameValid ||
+    !constantTimeEqual(suppliedHash, expectedHash)
+  ) {
     await db("waitlist_admin_attempts", {
       method: "POST",
       body: JSON.stringify({ ip_hash: ipHash, global_key: "global" }),
     });
+    await recordAdminEvent(req, "admin_login_failed", "failure");
     return json({ error: "unauthorized" }, 401);
   }
+  await recordAdminEvent(req, "admin_login_success", "success");
   return json({ token: await createAdminSession() });
 }
 
@@ -505,7 +600,7 @@ Deno.serve(async (req) => {
   currentOrigin = req.headers.get("origin");
   if (
     currentOrigin && currentOrigin !== "null" &&
-    !allowedOrigins.has(currentOrigin)
+    !originAllowed(currentOrigin)
   ) {
     return json({ error: "origin_not_allowed" }, 403);
   }
@@ -550,6 +645,28 @@ Deno.serve(async (req) => {
       return adminLogin(req);
     }
     if (!await isAdmin(req)) return json({ error: "unauthorized" }, 401);
+    if (action === "admin-logout") {
+      const payload = await adminSessionPayload(req.headers.get("x-admin-token") ?? "");
+      if (!payload?.jti || !payload?.exp) {
+        return json({ error: "invalid_session" }, 401);
+      }
+      await db("waitlist_revoked_admin_sessions", {
+        method: "POST",
+        headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
+        body: JSON.stringify({
+          jti: payload.jti,
+          expires_at: new Date(payload.exp).toISOString(),
+        }),
+      });
+      await recordAdminEvent(req, "admin_logout", "success");
+      return json({ ok: true });
+    }
+    if (action === "status") {
+      return json({
+        signupEnabled,
+        broadcastEnabled,
+      });
+    }
     if (action === "admin-list") {
       const search = url.searchParams.get("search") ?? "";
       const status = url.searchParams.get("status") ?? "";
@@ -591,9 +708,28 @@ Deno.serve(async (req) => {
           row.interest === "support_others"
         ).length,
       };
+      await recordAdminEvent(req, "admin_list", "success", {
+        search_used: Boolean(search),
+        status: status || null,
+        interest: interest || null,
+        page,
+        count: rows.length,
+      });
       return json({ subscribers: rows, counts, page, pageSize: limit });
     }
+    if (action === "admin-events") {
+      const rows = await db(
+        "waitlist_admin_events?order=created_at.desc&limit=100&select=event_type,created_at,ip_hash,result,metadata,subscriber_id",
+      );
+      return json({ events: rows });
+    }
     if (action === "admin-send") {
+      if (!broadcastEnabled) {
+        return json({
+          error: "broadcast_disabled",
+          message: "Envio desativado. Ative o segredo BROADCAST_ENABLED para enviar mensagens.",
+        }, 403);
+      }
       const payload = await req.json();
       const subject = String(payload.subject ?? "").trim();
       const body = String(payload.body ?? "").trim();
@@ -654,9 +790,19 @@ Deno.serve(async (req) => {
           failure_count: failedCount,
         }),
       });
+      await recordAdminEvent(req, "admin_send_bulk", "success", {
+        template_id: String(payload.template_id ?? "") || null,
+        total: subscribers.length,
+      });
       return json({ total: subscribers.length, sentCount, failedCount });
     }
     if (action === "admin-send-test") {
+      if (!broadcastEnabled) {
+        return json({
+          error: "broadcast_disabled",
+          message: "Envio desativado. Ative o segredo BROADCAST_ENABLED para enviar mensagens.",
+        }, 403);
+      }
       const payload = await req.json();
       const to = String(payload.to ?? "").trim().toLowerCase();
       const subject = String(payload.subject ?? "").slice(0, 200);
@@ -672,6 +818,9 @@ Deno.serve(async (req) => {
         }<p><a href="${publicSiteUrl}/pages/waitlist-descadastro.html">Descadastrar meu e-mail</a></p>`,
         `${body}\n\nO link de descadastro será personalizado no envio real.`,
       );
+      await recordAdminEvent(req, "admin_send_test", "success", {
+        template_id: String(payload.template_id ?? "") || null,
+      });
       return json({ ok: true });
     }
     if (action === "admin-export") {
@@ -701,6 +850,11 @@ Deno.serve(async (req) => {
           ].join(",")
         ),
       ].join("\n");
+      await recordAdminEvent(req, "admin_export", "success", {
+        status,
+        interest: interest || null,
+        rows: rows.length,
+      });
       return new Response(csv, {
         headers: {
           ...corsHeaders(),
@@ -747,11 +901,20 @@ Deno.serve(async (req) => {
           method: payload.id ? "PATCH" : "POST",
           body: JSON.stringify(body),
         });
+        await recordAdminEvent(
+          req,
+          payload.id ? "admin_template_edit" : "admin_template_create",
+          "success",
+          { template_id: payload.id || templates?.[0]?.id || null },
+        );
         return json({ template: templates?.[0] ?? { ...body } });
       }
       if (action === "admin-template-delete" && payload.id) {
         await db(`waitlist_templates?id=eq.${encodeURIComponent(payload.id)}`, {
           method: "DELETE",
+        });
+        await recordAdminEvent(req, "admin_template_delete", "success", {
+          template_id: payload.id,
         });
         return json({ ok: true });
       }
@@ -772,13 +935,7 @@ Deno.serve(async (req) => {
           updated_at: new Date().toISOString(),
         }),
       });
-      await db("waitlist_admin_events", {
-        method: "POST",
-        body: JSON.stringify({
-          event_type: "subscriber_deleted",
-          subscriber_id: id,
-        }),
-      });
+      await recordAdminEvent(req, "subscriber_deleted", "success", {}, id);
       return json({ ok: true });
     }
     return json({ error: "not_found" }, 404);

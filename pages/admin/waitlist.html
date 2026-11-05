@@ -11,11 +11,21 @@
 </head>
 <body>
     <main class="waitlist-admin">
-        <header>
-            <span class="eyebrow">Área administrativa</span>
-            <h1>Lista de espera</h1>
+        <header class="admin-brand">
+            <img src="../../assets/images/logo-white.png" alt="" class="admin-brand-logo">
+            <div>
+                <span class="eyebrow">Área administrativa</span>
+                <h1>Lista de espera</h1>
+            </div>
         </header>
-        <form class="admin-login">
+        <form class="admin-login admin-card">
+            <div class="admin-login-heading">
+                <span class="eyebrow">Acesso restrito</span>
+                <h2>Bem-vindo de volta</h2>
+                <p>Gerencie inscrições, mensagens e atividade do PoorGuy.</p>
+            </div>
+            <label for="admin-username">Usuário administrativo</label>
+            <input id="admin-username" type="text" autocomplete="username" required>
             <label for="admin-password">Senha administrativa</label>
             <input id="admin-password" type="password" autocomplete="current-password" required>
             <button type="submit">Entrar</button>
@@ -23,10 +33,16 @@
         </form>
         <section class="admin-dashboard" hidden>
             <div class="admin-actions">
-                <button type="button" data-admin-action="refresh">Atualizar lista</button>
-                <button type="button" data-admin-action="export">Exportar CSV</button>
-                <button type="button" data-admin-action="logout">Sair</button>
+                <div class="admin-live-state"><span></span> Atualização automática <small data-live-updated></small></div>
+                <button class="admin-button-secondary" type="button" data-admin-action="refresh">Atualizar agora</button>
+                <button class="admin-button-secondary" type="button" data-admin-action="export">Exportar CSV</button>
+                <button class="admin-button-danger" type="button" data-admin-action="logout">Sair</button>
             </div>
+            <nav class="admin-tabs" aria-label="Seções administrativas">
+                <button type="button" data-admin-tab="dashboard">Painel</button>
+                <button type="button" data-admin-tab="activity">Atividade</button>
+            </nav>
+            <div data-admin-pane="dashboard">
             <div class="admin-stats" aria-live="polite"></div>
             <div class="admin-filters">
                 <label>Buscar e-mail <input type="search" name="search"></label>
@@ -34,11 +50,12 @@
                 <label>Interesse <select name="interest"><option value="">Todos</option><option value="request_support">Pedir apoio</option><option value="support_others">Ajudar alguém</option></select></label>
                 <button type="button" data-admin-action="filter">Filtrar</button>
             </div>
-            <div class="admin-table-wrap">
+            <div class="admin-table-wrap admin-card">
                 <table>
                     <thead><tr><th>E-mail</th><th>Interesse</th><th>Status</th><th>Cadastro</th><th>Confirmação</th><th></th></tr></thead>
                     <tbody></tbody>
                 </table>
+                <p class="admin-table-empty" hidden>Nenhum cadastro encontrado.</p>
             </div>
             <div class="admin-pagination"><button type="button" data-admin-action="previous">Anterior</button><span></span><button type="button" data-admin-action="next">Próxima</button></div>
             <section class="admin-templates">
@@ -48,15 +65,27 @@
             </section>
             <form class="admin-campaign">
                 <h2>Enviar mensagem</h2>
+                <p class="admin-broadcast-status" role="status" hidden>Envio desativado</p>
                 <label>Assunto <input name="subject" maxlength="200" required></label>
                 <label>Mensagem<textarea name="body" maxlength="10000" rows="8" required></textarea></label>
                 <label>E-mail de teste <input name="test_email" type="email"></label>
                 <button type="button" data-admin-action="preview">Pré-visualizar</button>
-                <button type="button" data-admin-action="send-test">Enviar teste</button>
+                <button type="button" data-admin-action="send-test" data-broadcast-action="send">Enviar teste</button>
                 <p>O e-mail será enviado somente aos cadastros confirmados e ativos, com link de descadastro.</p>
-                <button type="submit">Enviar para todos</button>
+                <button type="submit" data-broadcast-action="send">Enviar para todos</button>
                 <p class="admin-campaign-status" role="status" aria-live="polite"></p>
             </form>
+            </div>
+            <section data-admin-pane="activity" hidden>
+                <h2>Atividade</h2>
+                <div class="admin-events-status" role="status"></div>
+                <div class="admin-events-wrap">
+                    <table>
+                        <thead><tr><th>Data/hora</th><th>Evento</th><th>Resultado</th><th>Detalhes</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </section>
         </section>
     </main>
     <script src="../../assets/js/waitlist-config.js"></script>

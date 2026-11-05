@@ -1,8 +1,14 @@
-.waitlist-admin { width: min(1120px, calc(100% - 32px)); min-height: 100vh; margin: 0 auto; padding: 64px 0; }
-.waitlist-admin > header { margin-bottom: 28px; }
-.waitlist-admin h1 { margin-top: 10px; }
+.waitlist-admin { width: min(1120px, calc(100% - 32px)); min-height: 100vh; margin: 0 auto; padding: 48px 0 72px; }
+.waitlist-admin::before { position: fixed; inset: 0; z-index: -1; content: ""; background: radial-gradient(circle at 50% 0, rgba(91,168,228,.09), transparent 42%), var(--bg); }
+.admin-brand { display: flex; align-items: center; gap: 16px; margin-bottom: 28px; }
+.admin-brand-logo { width: 48px; height: 48px; object-fit: contain; }
+.admin-brand h1 { margin: 4px 0 0; }
+.admin-card { border: 1px solid var(--border); border-radius: 18px; background: linear-gradient(145deg, rgba(17,18,24,.98), rgba(13,14,18,.98)); box-shadow: 0 24px 80px rgba(0,0,0,.28); }
+.admin-login-heading { margin-bottom: 8px; }
+.admin-login-heading h2 { margin: 5px 0 8px; font-size: 28px; }
+.admin-login-heading p { margin: 0; color: var(--muted); line-height: 1.6; }
 .admin-login, .admin-campaign { max-width: 520px; padding: 22px; border: 1px solid var(--border); border-radius: 16px; background: var(--surface); }
-.admin-login { display: grid; gap: 10px; }
+.admin-login { width: min(100%, 460px); margin: 72px auto 0; display: grid; gap: 12px; }
 .admin-login label, .admin-campaign label { font-size: 13px; font-weight: 700; }
 .admin-login input, .admin-campaign input, .admin-campaign textarea {
     width: 100%;
@@ -25,7 +31,31 @@
 }
 .admin-login-status, .admin-campaign-status { min-height: 20px; color: var(--muted); font-size: 13px; }
 .admin-actions { margin-bottom: 16px; display: flex; gap: 10px; }
-.admin-table-wrap { margin-bottom: 28px; overflow-x: auto; border: 1px solid var(--border); border-radius: 12px; }
+.admin-live-state { margin-right: auto; align-self: center; color: var(--muted); font-size: 13px; }
+.admin-live-state span { display: inline-block; width: 8px; height: 8px; margin-right: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 12px var(--green); }
+.admin-button-secondary { background: transparent !important; color: var(--text) !important; border: 1px solid var(--border) !important; }
+.admin-button-danger { background: rgba(190,70,70,.14) !important; color: #ffb7b7 !important; border: 1px solid rgba(190,70,70,.35) !important; }
+.admin-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 16px; padding: 18px; border-left: 3px solid var(--gold); border-radius: 12px; background: var(--surface); color: var(--text); line-height: 1.7; }
+.admin-filters { display: grid; grid-template-columns: 2fr 1fr 1fr auto; align-items: end; gap: 12px; margin-bottom: 16px; padding: 16px; border-radius: 12px; background: var(--surface); }
+.admin-filters label { display: grid; gap: 7px; color: var(--muted); font-size: 13px; }
+.admin-filters select, .admin-filters input { min-height: 42px; padding: 0 12px; border: 1px solid var(--border); border-radius: 8px; color: var(--text); background: var(--surface-2); font: inherit; }
+.admin-table-wrap { margin-bottom: 28px; overflow-x: auto; }
+.admin-table-empty { padding: 28px; text-align: center; color: var(--muted); }
 .admin-table-wrap table { width: 100%; border-collapse: collapse; }
 .admin-table-wrap th, .admin-table-wrap td { padding: 12px; border-bottom: 1px solid var(--border); text-align: left; font-size: 13px; }
 .admin-campaign { max-width: 760px; display: grid; gap: 12px; }
+.admin-tabs { margin-bottom: 16px; display: flex; gap: 8px; }
+.admin-tabs button { min-height: 38px; padding: 0 14px; border: 1px solid var(--border); border-radius: 8px; background: transparent; color: var(--text); cursor: pointer; }
+.admin-events-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 12px; }
+.admin-events-wrap table { width: 100%; border-collapse: collapse; }
+.admin-events-wrap th, .admin-events-wrap td { padding: 12px; border-bottom: 1px solid var(--border); text-align: left; font-size: 13px; }
+@media (max-width: 760px) {
+    .waitlist-admin { width: min(100% - 24px, 1120px); padding-top: 28px; }
+    .admin-login { margin-top: 32px; }
+    .admin-actions { flex-wrap: wrap; }
+    .admin-live-state { width: 100%; }
+    .admin-actions button { flex: 1 1 140px; }
+    .admin-filters { grid-template-columns: 1fr; }
+    .admin-stats { grid-template-columns: 1fr 1fr; }
+    .admin-tabs { overflow-x: auto; }
+}

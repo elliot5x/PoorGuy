@@ -1,24 +1,17 @@
 # PoorGuy
 
-Landing page de pre-lancamento da PoorGuy, uma rede social criada para conectar pessoas com contas atrasadas a uma comunidade de apoio transparente, com selecao aleatoria dos apoiadores.
-
-Projeto criado por um **VibeCoder**, com auxílio de inteligência artificial.
+Site público e painel da lista de espera da PoorGuy.
 
 **Site publicado:** https://elliot5x.github.io/PoorGuy/
-
-## Sobre o projeto
-
-O PoorGuy foi desenvolvido com foco em acolhimento, respeito, simplicidade e transparencia. A interface apresenta a proposta da plataforma, como funciona o processo, informacoes de seguranca, perguntas frequentes e um formulario para entrada na lista de espera.
-
-O site foi desenvolvido com auxilio de ferramentas de inteligencia artificial.
-
-O recebimento de apoio nao representa uma garantia de pagamento.
 
 ## Tecnologias
 
 - HTML5
 - CSS3
 - JavaScript
+- Supabase Edge Functions
+- Supabase Postgres
+- Resend
 - GitHub Pages
 
 ## Estrutura
@@ -30,41 +23,38 @@ O recebimento de apoio nao representa uma garantia de pagamento.
 │   ├── images/
 │   └── js/
 ├── pages/
+│   ├── admin/
 │   ├── legal/
-│   │   ├── contato.html
-│   │   ├── privacidade.html
-│   │   └── termos.html
 │   └── preview.html
-├── .github/workflows/
+├── supabase/
+│   ├── functions/
+│   ├── migrations/
+│   └── scripts/
 ├── index.html
-├── .gitignore
+├── WAITLIST_SETUP.md
 └── README.md
 ```
 
 ## Executar localmente
 
-Como o site e estatico, abra o arquivo `index.html` diretamente no navegador ou execute um servidor local:
+Como o site é estático, execute um servidor local na raiz do projeto:
 
 ```bash
 python3 -m http.server 4173
 ```
 
-Depois, acesse `http://localhost:4173`.
+Acesse `http://localhost:4173`.
 
-## Preview da rede social
+## Lista de espera
 
-A pagina `pages/preview.html` apresenta uma demonstracao da proposta:
+A configuração da Edge Function, os segredos, o deploy e os testes estão documentados em [WAITLIST_SETUP.md](WAITLIST_SETUP.md).
 
-- Publicacao de um link de pagamento para gerar um QR code localmente.
-- Deck de apoio estilo Tinder com perfis ilustrativos.
-- Navegacao por gestos ou pelos botoes de acao.
+O painel administrativo está em `pages/admin/waitlist.html`.
 
-Nenhum pagamento real ou envio de dados pessoais ocorre nessa demonstracao.
+## Publicação
 
-## Publicacao
-
-O deploy para o GitHub Pages acontece automaticamente quando alteracoes sao enviadas para a branch `main`.
+O GitHub Pages é publicado automaticamente a partir da branch `main`.
 
 ## Privacidade
 
-Dados sensiveis como CPF, endereco, documentos bancarios e informacoes bancarias nao devem ser exibidos publicamente.
+A política publicada está em `pages/legal/privacidade.html`.
