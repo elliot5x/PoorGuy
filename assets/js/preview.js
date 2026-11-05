@@ -69,6 +69,7 @@ paymentForm.addEventListener("submit", (event) => {
     formError.textContent = "";
     if (!randomAccountAmount) randomAccountAmount = randomAmount();
     document.querySelector(".published-card-builder").hidden = false;
+    document.querySelector(".published-card-builder").scrollIntoView({ behavior: "smooth", block: "nearest" });
 });
 
 document.querySelector(".create-card-button").addEventListener("click", () => {
@@ -102,7 +103,10 @@ document.querySelector(".create-card-button").addEventListener("click", () => {
         if (oldestIndex >= 0) profiles.splice(oldestIndex, 1);
     }
     currentIndex = profiles.indexOf(generatedProfile);
-    renderCards();
+    if (profiles.length) {
+        renderCards();
+        updatePayButton();
+    }
     updatePayButton();
 
     activatePreviewMode("support");
