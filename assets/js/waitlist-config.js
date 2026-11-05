@@ -1,3 +1,3 @@
 window.PoorGuyWaitlistConfig = Object.freeze({
-    endpoint: ""
+    endpoint: "https://fyiarrsaxzihkxynjpif.supabase.co/functions/v1/waitlist"
 });
