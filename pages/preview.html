@@ -35,6 +35,15 @@
                 <p>Use um link de pagamento público. Não envie CPF, endereço, dados bancários ou documentos.</p>
             </div>
 
+            <div class="demo-link-picker">
+                <span>Links ilustrativos para testar</span>
+                <div>
+                    <button type="button" data-demo="energy">Conta de energia <small></small></button>
+                    <button type="button" data-demo="internet">Conta de internet <small></small></button>
+                    <button type="button" data-demo="health">Conta de saúde <small></small></button>
+                </div>
+            </div>
+
             <form class="payment-form" novalidate>
                 <label for="payment-link">Link público de pagamento</label>
                 <div class="link-field">
@@ -56,6 +65,26 @@
                 </div>
                 <button class="download-qr" type="button">Baixar QR code</button>
             </div>
+
+            <div class="published-card-builder" hidden>
+                <span class="eyebrow">Monte seu card ilustrativo</span>
+                <div class="published-card-fields">
+                    <label>Nome <input id="published-card-name" type="text" maxlength="40" value="Mariana, 31"></label>
+                    <label>Tipo da conta <input id="published-card-category" type="text" maxlength="40" value="Energia elétrica"></label>
+                </div>
+                <label for="published-card-description">Descrição</label>
+                <textarea id="published-card-description" maxlength="180" rows="3">Estou buscando apoio para regularizar uma conta essencial.</textarea>
+                <button class="create-card-button" type="button">Gerar card <span>✦</span></button>
+            </div>
+
+            <article class="published-card-preview" hidden>
+                <span class="published-card-status">Perfil ilustrativo</span>
+                <div class="published-card-avatar">M</div>
+                <span class="eyebrow" id="published-card-category-preview"></span>
+                <strong id="published-card-name-preview"></strong>
+                <span class="published-card-amount" id="published-card-amount-preview"></span>
+                <p id="published-card-description-preview"></p>
+            </article>
         </section>
 
         <section class="preview-panel support-panel" data-panel="support" aria-labelledby="support-title">

@@ -19,6 +19,40 @@ const qrResult = document.querySelector(".qr-result");
 const qrContainer = document.querySelector("#payment-qr");
 let qrCode;
 
+const demoAccounts = {
+    energy: { category: "Energia elétrica", link: "https://example.invalid/conta/energia", name: "Mariana, 31", description: "Estou buscando apoio para regularizar uma conta essencial." },
+    internet: { category: "Internet", link: "https://example.invalid/conta/internet", name: "Renato, 28", description: "Preciso manter a conexão para continuar o trabalho e os estudos." },
+    health: { category: "Saúde", link: "https://example.invalid/conta/saude", name: "Luana, 35", description: "Quero reorganizar uma despesa de saúde com transparência." }
+};
+let selectedDemo = null;
+let randomAccountAmount = 0;
+
+function randomAmount() {
+    const values = [85, 120, 175, 210, 240, 280, 350, 420];
+    return values[Math.floor(Math.random() * values.length)];
+}
+
+document.querySelectorAll("[data-demo]").forEach((button) => {
+    button.addEventListener("click", () => {
+        selectedDemo = demoAccounts[button.dataset.demo];
+        randomAccountAmount = randomAmount();
+        paymentInput.value = `${selectedDemo.link}?valor=${randomAccountAmount}`;
+        document.querySelector("#published-card-name").value = selectedDemo.name;
+        document.querySelector("#published-card-category").value = selectedDemo.category;
+        document.querySelector("#published-card-description").value = selectedDemo.description;
+        button.querySelector("small").textContent = `R$ ${randomAccountAmount}`;
+        formError.textContent = "";
+        qrResult.hidden = true;
+        document.querySelector(".published-card-builder").hidden = true;
+        document.querySelector(".published-card-preview").hidden = true;
+    });
+});
+
+Object.entries(demoAccounts).forEach(([key, account]) => {
+    const button = document.querySelector(`[data-demo="${key}"]`);
+    button.querySelector("small").textContent = `R$ ${randomAmount()}`;
+});
+
 paymentForm.addEventListener("submit", (event) => {
     event.preventDefault();
     let url;
@@ -47,6 +81,27 @@ paymentForm.addEventListener("submit", (event) => {
         correctLevel: QRCode.CorrectLevel.M
     });
     qrResult.hidden = false;
+    if (!randomAccountAmount) randomAccountAmount = randomAmount();
+    document.querySelector(".published-card-builder").hidden = false;
+});
+
+document.querySelector(".create-card-button").addEventListener("click", () => {
+    const name = document.querySelector("#published-card-name").value.trim();
+    const category = document.querySelector("#published-card-category").value.trim();
+    const description = document.querySelector("#published-card-description").value.trim();
+    if (!name || !category || !description) {
+        formError.textContent = "Preencha nome, tipo da conta e descrição para gerar o card.";
+        return;
+    }
+    const preview = document.querySelector(".published-card-preview");
+    preview.querySelector(".published-card-avatar").textContent = name.charAt(0).toUpperCase();
+    document.querySelector("#published-card-category-preview").textContent = category;
+    document.querySelector("#published-card-name-preview").textContent = name;
+    if (!randomAccountAmount) randomAccountAmount = randomAmount();
+    document.querySelector("#published-card-amount-preview").textContent = `R$ ${randomAccountAmount}`;
+    document.querySelector("#published-card-description-preview").textContent = description;
+    preview.hidden = false;
+    preview.scrollIntoView({ behavior: "smooth", block: "center" });
 });
 
 document.querySelector(".download-qr").addEventListener("click", () => {
