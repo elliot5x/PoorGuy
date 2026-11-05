@@ -1,104 +1,190 @@
-const WAITLIST_ADMIN_ENDPOINT = "";
-let adminToken = "";
+const ENDPOINT = window.PoorGuyWaitlistConfig?.endpoint ?? "";
+let adminToken = sessionStorage.getItem("poorguy_admin_session") ?? "";
+let currentPage = 1;
 
 const loginForm = document.querySelector(".admin-login");
 const loginStatus = document.querySelector(".admin-login-status");
 const dashboard = document.querySelector(".admin-dashboard");
 const tableBody = document.querySelector(".admin-table-wrap tbody");
-const campaignForm = document.querySelector(".admin-campaign");
-const campaignStatus = document.querySelector(".admin-campaign-status");
+const stats = document.querySelector(".admin-stats");
+const pagination = document.querySelector(".admin-pagination span");
 
 async function adminRequest(action, options = {}) {
-    const separator = WAITLIST_ADMIN_ENDPOINT.includes("?") ? "&" : "?";
-    const response = await fetch(`${WAITLIST_ADMIN_ENDPOINT}${separator}action=${encodeURIComponent(action)}`, {
-        ...options,
-        headers: { Accept: "application/json", "Content-Type": "application/json", "x-admin-token": adminToken, ...(options.headers ?? {}) }
+    const separator = ENDPOINT.includes("?") ? "&" : "?";
+    const response = await fetch(`${ENDPOINT}${separator}action=${encodeURIComponent(action)}`, {
+        method: options.method ?? "POST",
+        headers: { Accept: "application/json", "Content-Type": "application/json", "x-admin-token": adminToken, ...(options.headers ?? {}) },
+        body: options.body
     });
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.error || "request_failed");
-    return data;
+    if (!response.ok) throw new Error("unauthorized_or_unavailable");
+    return action === "admin-export" ? response.text() : response.json();
 }
 
 function formatDate(value) {
-    if (!value) return "-";
-    return new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" }).format(new Date(value));
+    return value ? new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" }).format(new Date(value)) : "-";
+}
+
+function subscriberStatus(row) {
+    if (row.unsubscribed_at) return "Descadastrado";
+    return row.confirmed_at ? "Confirmado" : "Pendente";
 }
 
 async function loadSubscribers() {
-    const data = await adminRequest("admin-list");
+    const search = document.querySelector('[name="search"]')?.value ?? "";
+    const status = document.querySelector('[name="status"]')?.value ?? "";
+    const interest = document.querySelector('[name="interest"]')?.value ?? "";
+    const data = await adminRequest(`admin-list&search=${encodeURIComponent(search)}&status=${status}&interest=${interest}&page=${currentPage}`);
     tableBody.replaceChildren();
-    data.subscribers.forEach(subscriber => {
-        const row = document.createElement("tr");
-        const interest = subscriber.interest === "request_support" ? "Pedir apoio" : "Ser apoiador";
-        [subscriber.email, interest, subscriber.confirmed_at ? formatDate(subscriber.confirmed_at) : "Não confirmado", formatDate(subscriber.created_at)].forEach(value => {
-            const cell = document.createElement("td");
-            cell.textContent = value;
-            row.append(cell);
+    data.subscribers.forEach(row => {
+        const tr = document.createElement("tr");
+        [
+            row.email,
+            row.interest === "request_support" ? "Pedir apoio" : "Ajudar alguém",
+            subscriberStatus(row),
+            formatDate(row.created_at),
+            formatDate(row.confirmed_at)
+        ].forEach(value => {
+            const td = document.createElement("td");
+            td.textContent = value;
+            tr.append(td);
         });
         const actions = document.createElement("td");
-        const deleteButton = document.createElement("button");
-        deleteButton.type = "button";
-        deleteButton.textContent = "Excluir";
-        deleteButton.dataset.deleteId = subscriber.id;
-        actions.append(deleteButton);
-        row.append(actions);
-        tableBody.append(row);
+        const remove = document.createElement("button");
+        remove.type = "button";
+        remove.dataset.deleteId = row.id;
+        remove.textContent = "Excluir definitivamente";
+        actions.append(remove);
+        tr.append(actions);
+        tableBody.append(tr);
+    });
+    stats.textContent = `Total: ${data.counts.total} | Confirmados: ${data.counts.confirmed} | Pendentes: ${data.counts.pending} | Descadastrados: ${data.counts.unsubscribed} | Pedir apoio: ${data.counts.support} | Ajudar alguém: ${data.counts.supporter}`;
+    pagination.textContent = `Página ${currentPage}`;
+}
+
+async function loadTemplates() {
+    const data = await adminRequest("admin-template-list", { body: "{}" });
+    const container = document.querySelector(".template-list");
+    container.replaceChildren();
+    data.templates.forEach(template => {
+        const item = document.createElement("article");
+        const name = document.createElement("strong");
+        name.textContent = template.name;
+        const use = document.createElement("button");
+        use.type = "button";
+        use.textContent = "Usar";
+        use.addEventListener("click", () => {
+            document.querySelector('[name="subject"]').value = template.subject;
+            document.querySelector('[name="body"]').value = template.text_body;
+        });
+        const duplicate = document.createElement("button");
+        duplicate.type = "button";
+        duplicate.textContent = "Duplicar";
+        duplicate.addEventListener("click", () => adminRequest("admin-template-save", { body: JSON.stringify({ name: `${template.name} (cópia)`, subject: template.subject, html_body: template.html_body, text_body: template.text_body }) }));
+        const remove = document.createElement("button");
+        remove.type = "button";
+        remove.textContent = "Excluir";
+        remove.addEventListener("click", () => {
+            if (window.confirm("Excluir este modelo?")) adminRequest("admin-template-delete", { body: JSON.stringify({ id: template.id }) }).then(loadTemplates);
+        });
+        item.append(name, use, duplicate, remove);
+        container.append(item);
     });
 }
 
 loginForm.addEventListener("submit", async event => {
+    event.preventEvent?.();
     event.preventDefault();
-    if (!WAITLIST_ADMIN_ENDPOINT) {
-        loginStatus.textContent = "O painel administrativo ainda não está configurado.";
-        return;
-    }
     loginStatus.textContent = "Verificando...";
     try {
-        const response = await fetch(`${WAITLIST_ADMIN_ENDPOINT}?action=admin-login`, {
+        const response = await fetch(`${ENDPOINT}?action=admin-login`, {
             method: "POST",
             headers: { Accept: "application/json", "Content-Type": "application/json" },
             body: JSON.stringify({ password: document.querySelector("#admin-password").value })
         });
+        if (!response.ok) throw new Error();
         const data = await response.json();
-        if (!response.ok) throw new Error("unauthorized");
         adminToken = data.token;
+        sessionStorage.setItem("poorguy_admin_session", adminToken);
         loginForm.hidden = true;
         dashboard.hidden = false;
         await loadSubscribers();
+        await loadTemplates();
     } catch {
-        loginStatus.textContent = "Senha inválida ou serviço indisponível.";
+        loginStatus.textContent = "Não foi possível acessar. Verifique a senha ou tente novamente.";
     }
 });
 
-document.querySelector('[data-admin-action="refresh"]').addEventListener("click", loadSubscribers);
 document.querySelector('[data-admin-action="logout"]').addEventListener("click", () => {
+    sessionStorage.removeItem("poorguy_admin_session");
     adminToken = "";
     dashboard.hidden = true;
     loginForm.hidden = false;
     loginForm.reset();
 });
 
+document.addEventListener("click", async event => {
+    const action = event.target.closest("[data-admin-action]")?.dataset.adminAction;
+    if (action === "refresh" || action === "filter") {
+        currentPage = 1;
+        await loadSubscribers();
+    }
+    if (action === "previous") {
+        currentPage = Math.max(1, currentPage - 1);
+        await loadSubscribers();
+    }
+    if (action === "next") {
+        currentPage++;
+        await loadSubscribers();
+    }
+    if (action === "preview") {
+        const data = new FormData(campaignForm);
+        window.alert(`${data.get("subject")}\n\n${data.get("body")}`);
+    }
+    if (action === "send-test") {
+        const data = new FormData(campaignForm);
+        await adminRequest("admin-send-test", { body: JSON.stringify({ to: data.get("test_email"), subject: data.get("subject"), body: data.get("body") }) });
+        campaignForm.querySelector(".admin-campaign-status").textContent = "E-mail de teste enviado.";
+    }
+    if (action === "export") {
+        const status = document.querySelector('[name="status"]').value || "confirmed";
+        const interest = document.querySelector('[name="interest"]').value;
+        const csv = await adminRequest(`admin-export&status=${status}&interest=${encodeURIComponent(interest)}`);
+        const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "poorguy-inscritos.csv";
+        link.click();
+        URL.revokeObjectURL(url);
+    }
+});
+
 tableBody.addEventListener("click", async event => {
     const button = event.target.closest("[data-delete-id]");
-    if (!button) return;
-    if (!window.confirm("Excluir definitivamente este cadastro solicitado?")) return;
-    await adminRequest("admin-delete", { method: "POST", body: JSON.stringify({ id: button.dataset.deleteId }) });
+    if (!button || !window.confirm("Excluir definitivamente este cadastro solicitado? Esta ação não pode ser desfeita.")) return;
+    await adminRequest("admin-delete", { body: JSON.stringify({ id: button.dataset.deleteId }) });
     await loadSubscribers();
 });
 
+const campaignForm = document.querySelector(".admin-campaign");
 campaignForm.addEventListener("submit", async event => {
     event.preventDefault();
-    if (!window.confirm("Enviar esta mensagem para todos os inscritos confirmados ativos?")) return;
-    campaignStatus.textContent = "Enviando...";
-    try {
-        const data = new FormData(campaignForm);
-        const result = await adminRequest("admin-send", {
-            method: "POST",
-            body: JSON.stringify({ subject: data.get("subject"), body: data.get("body") })
-        });
-        campaignStatus.textContent = `${result.sentCount} e-mail(s) enviado(s).`;
-        campaignForm.reset();
-    } catch {
-        campaignStatus.textContent = "Não foi possível enviar a mensagem.";
-    }
+    const phrase = window.prompt("Para enviar para todos, digite ENVIAR.");
+    if (phrase !== "ENVIAR" || !window.confirm("Enviar para N pessoas? Não dá para desfazer.")) return;
+    const data = new FormData(campaignForm);
+    const result = await adminRequest("admin-send", {
+        body: JSON.stringify({ subject: data.get("subject"), body: data.get("body"), confirmed: true })
+    });
+    campaignForm.querySelector(".admin-campaign-status").textContent = `${result.total} destinatários: ${result.sentCount} enviados, ${result.failedCount} falhas.`;
 });
+
+if (adminToken) {
+    loginForm.hidden = true;
+    dashboard.hidden = false;
+    loadSubscribers().catch(() => {
+        sessionStorage.removeItem("poorguy_admin_session");
+        adminToken = "";
+        dashboard.hidden = true;
+        loginForm.hidden = false;
+    });
+    loadTemplates().catch(() => {});
+}

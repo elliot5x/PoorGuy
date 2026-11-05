@@ -1,4 +1,4 @@
-const WAITLIST_CONFIRM_ENDPOINT = "";
+const WAITLIST_CONFIRM_ENDPOINT = window.PoorGuyWaitlistConfig?.endpoint ?? "";
 const status = document.querySelector(".waitlist-confirmation-status");
 const token = new URLSearchParams(location.search).get("token");
 
@@ -8,7 +8,11 @@ async function confirm() {
         return;
     }
     try {
-        const response = await fetch(`${WAITLIST_CONFIRM_ENDPOINT}?action=verify&token=${encodeURIComponent(token)}`, { headers: { Accept: "application/json" } });
+        const response = await fetch(`${WAITLIST_CONFIRM_ENDPOINT}?action=verify`, {
+            method: "POST",
+            headers: { Accept: "application/json", "Content-Type": "application/json" },
+            body: JSON.stringify({ token })
+        });
         const data = await response.json();
         status.textContent = data.ok ? "E-mail confirmado. Obrigado por entrar na lista de espera." : "Este link de confirmação é inválido ou expirou.";
     } catch {

@@ -25,3 +25,40 @@ yarn-error.log*
 .env
 .env.*
 !.env.example
+!.env.*.example
+
+# Secrets, credenciais e configuracoes privadas
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.crt
+*.cer
+*.der
+secrets/
+credentials/
+.secrets/
+service-account*.json
+*service*role*.json
+*credentials*.json
+
+# Chaves e autenticacao locais
+.ssh/
+.netrc
+*.token
+*.secret
+supabase/.temp/
+supabase/.branches/
+supabase/.env
+supabase/.env.*
+!supabase/.env.example
+
+# Dumps e backups locais que podem conter dados pessoais
+*.sql.gz
+*.sqlite
+*.sqlite3
+*.db
+*.dump
+dump.sql

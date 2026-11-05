@@ -1,5 +1,4 @@
-// Configure o endpoint do serviço de formulários (por exemplo, Formspree) e mantenha vazio até a integração estar ativa.
-const WAITLIST_ENDPOINT = "";
+const WAITLIST_ENDPOINT = window.PoorGuyWaitlistConfig?.endpoint ?? "";
 
 const waitlistForm = document.querySelector(".waitlist-form");
 const waitlistStatus = waitlistForm?.querySelector(".waitlist-status");
@@ -59,8 +58,7 @@ if (waitlistForm && waitlistStatus && waitlistButton) {
             email: waitlistForm.elements.email.value.trim(),
             interest: interestInput?.value || "",
             consent: true,
-            consentVersion: "2026-11-04",
-            _subject: "Nova inscrição na lista de espera - PoorGuy"
+            hp: waitlistForm.elements.website.value
         };
 
         waitlistButton.disabled = true;
@@ -83,7 +81,7 @@ if (waitlistForm && waitlistStatus && waitlistButton) {
 
             saveLastSubmission();
             waitlistForm.reset();
-            setWaitlistStatus("Cadastro recebido! Você receberá novidades quando houver atualizações.", "success");
+            setWaitlistStatus("Enviamos um e-mail de confirmação. Confirme para entrar na lista.", "success");
         } catch {
             setWaitlistStatus("Não foi possível concluir o cadastro agora. Tente novamente em instantes.", "error");
         } finally {

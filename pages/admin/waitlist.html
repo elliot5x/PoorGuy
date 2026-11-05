@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
     <title>Admin da lista | PoorGuy</title>
     <link rel="icon" type="image/png" href="../../assets/images/logo-white.png">
     <link rel="stylesheet" href="../../assets/css/style.css">
@@ -23,24 +24,42 @@
         <section class="admin-dashboard" hidden>
             <div class="admin-actions">
                 <button type="button" data-admin-action="refresh">Atualizar lista</button>
+                <button type="button" data-admin-action="export">Exportar CSV</button>
                 <button type="button" data-admin-action="logout">Sair</button>
+            </div>
+            <div class="admin-stats" aria-live="polite"></div>
+            <div class="admin-filters">
+                <label>Buscar e-mail <input type="search" name="search"></label>
+                <label>Status <select name="status"><option value="">Todos</option><option value="pending">Pendente</option><option value="confirmed">Confirmado</option><option value="unsubscribed">Descadastrado</option></select></label>
+                <label>Interesse <select name="interest"><option value="">Todos</option><option value="request_support">Pedir apoio</option><option value="support_others">Ajudar alguém</option></select></label>
+                <button type="button" data-admin-action="filter">Filtrar</button>
             </div>
             <div class="admin-table-wrap">
                 <table>
-                    <thead><tr><th>E-mail</th><th>Interesse</th><th>Confirmado</th><th>Cadastro</th><th></th></tr></thead>
+                    <thead><tr><th>E-mail</th><th>Interesse</th><th>Status</th><th>Cadastro</th><th>Confirmação</th><th></th></tr></thead>
                     <tbody></tbody>
                 </table>
             </div>
+            <div class="admin-pagination"><button type="button" data-admin-action="previous">Anterior</button><span></span><button type="button" data-admin-action="next">Próxima</button></div>
+            <section class="admin-templates">
+                <h2>Modelos de e-mail</h2>
+                <div class="template-list"></div>
+                <button type="button" data-admin-action="new-template">Novo modelo</button>
+            </section>
             <form class="admin-campaign">
                 <h2>Enviar mensagem</h2>
                 <label>Assunto <input name="subject" maxlength="200" required></label>
                 <label>Mensagem<textarea name="body" maxlength="10000" rows="8" required></textarea></label>
+                <label>E-mail de teste <input name="test_email" type="email"></label>
+                <button type="button" data-admin-action="preview">Pré-visualizar</button>
+                <button type="button" data-admin-action="send-test">Enviar teste</button>
                 <p>O e-mail será enviado somente aos cadastros confirmados e ativos, com link de descadastro.</p>
                 <button type="submit">Enviar para todos</button>
                 <p class="admin-campaign-status" role="status" aria-live="polite"></p>
             </form>
         </section>
     </main>
+    <script src="../../assets/js/waitlist-config.js"></script>
     <script src="../../assets/js/waitlist-admin.js"></script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-const WAITLIST_UNSUBSCRIBE_ENDPOINT = "";
+const WAITLIST_UNSUBSCRIBE_ENDPOINT = window.PoorGuyWaitlistConfig?.endpoint ?? "";
 const status = document.querySelector(".waitlist-confirmation-status");
 const token = new URLSearchParams(location.search).get("token");
 
@@ -8,7 +8,11 @@ async function unsubscribe() {
         return;
     }
     try {
-        const response = await fetch(`${WAITLIST_UNSUBSCRIBE_ENDPOINT}?action=unsubscribe&token=${encodeURIComponent(token)}`, { headers: { Accept: "application/json" } });
+        const response = await fetch(`${WAITLIST_UNSUBSCRIBE_ENDPOINT}?action=unsubscribe`, {
+            method: "POST",
+            headers: { Accept: "application/json", "Content-Type": "application/json" },
+            body: JSON.stringify({ token })
+        });
         const data = await response.json();
         status.textContent = data.ok ? "Seu e-mail foi descadastrado das comunicações do PoorGuy." : "Este link de descadastro é inválido ou expirou.";
     } catch {
