@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin da lista | PoorGuy</title>
+    <link rel="icon" type="image/png" href="../../assets/images/logo-white.png">
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="../../assets/css/waitlist-admin.css">
+</head>
+<body>
+    <main class="waitlist-admin">
+        <header>
+            <span class="eyebrow">Área administrativa</span>
+            <h1>Lista de espera</h1>
+        </header>
+        <form class="admin-login">
+            <label for="admin-password">Senha administrativa</label>
+            <input id="admin-password" type="password" autocomplete="current-password" required>
+            <button type="submit">Entrar</button>
+            <p class="admin-login-status" role="alert"></p>
+        </form>
+        <section class="admin-dashboard" hidden>
+            <div class="admin-actions">
+                <button type="button" data-admin-action="refresh">Atualizar lista</button>
+                <button type="button" data-admin-action="logout">Sair</button>
+            </div>
+            <div class="admin-table-wrap">
+                <table>
+                    <thead><tr><th>E-mail</th><th>Interesse</th><th>Confirmado</th><th>Cadastro</th><th></th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <form class="admin-campaign">
+                <h2>Enviar mensagem</h2>
+                <label>Assunto <input name="subject" maxlength="200" required></label>
+                <label>Mensagem<textarea name="body" maxlength="10000" rows="8" required></textarea></label>
+                <p>O e-mail será enviado somente aos cadastros confirmados e ativos, com link de descadastro.</p>
+                <button type="submit">Enviar para todos</button>
+                <p class="admin-campaign-status" role="status" aria-live="polite"></p>
+            </form>
+        </section>
+    </main>
+    <script src="../../assets/js/waitlist-admin.js"></script>
+</body>
+</html>

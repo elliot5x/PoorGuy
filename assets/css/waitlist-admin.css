@@ -1,0 +1,31 @@
+.waitlist-admin { width: min(1120px, calc(100% - 32px)); min-height: 100vh; margin: 0 auto; padding: 64px 0; }
+.waitlist-admin > header { margin-bottom: 28px; }
+.waitlist-admin h1 { margin-top: 10px; }
+.admin-login, .admin-campaign { max-width: 520px; padding: 22px; border: 1px solid var(--border); border-radius: 16px; background: var(--surface); }
+.admin-login { display: grid; gap: 10px; }
+.admin-login label, .admin-campaign label { font-size: 13px; font-weight: 700; }
+.admin-login input, .admin-campaign input, .admin-campaign textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    background: rgba(255,255,255,.035);
+    font: inherit;
+}
+.admin-login button, .admin-actions button, .admin-campaign button, .admin-table-wrap button {
+    min-height: 42px;
+    padding: 0 14px;
+    border: 0;
+    border-radius: 8px;
+    color: #17140b;
+    background: var(--gold);
+    cursor: pointer;
+    font-weight: 800;
+}
+.admin-login-status, .admin-campaign-status { min-height: 20px; color: var(--muted); font-size: 13px; }
+.admin-actions { margin-bottom: 16px; display: flex; gap: 10px; }
+.admin-table-wrap { margin-bottom: 28px; overflow-x: auto; border: 1px solid var(--border); border-radius: 12px; }
+.admin-table-wrap table { width: 100%; border-collapse: collapse; }
+.admin-table-wrap th, .admin-table-wrap td { padding: 12px; border-bottom: 1px solid var(--border); text-align: left; font-size: 13px; }
+.admin-campaign { max-width: 760px; display: grid; gap: 12px; }

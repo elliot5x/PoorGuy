@@ -59,6 +59,7 @@ if (waitlistForm && waitlistStatus && waitlistButton) {
             email: waitlistForm.elements.email.value.trim(),
             interest: interestInput?.value || "",
             consent: true,
+            consentVersion: "2026-11-04",
             _subject: "Nova inscrição na lista de espera - PoorGuy"
         };
 
@@ -68,7 +69,8 @@ if (waitlistForm && waitlistStatus && waitlistButton) {
         setWaitlistStatus("Enviando seu cadastro...", "");
 
         try {
-            const response = await fetch(WAITLIST_ENDPOINT, {
+            const endpoint = `${WAITLIST_ENDPOINT}${WAITLIST_ENDPOINT.includes("?") ? "&" : "?"}action=subscribe`;
+            const response = await fetch(endpoint, {
                 method: "POST",
                 headers: {
                     "Accept": "application/json",

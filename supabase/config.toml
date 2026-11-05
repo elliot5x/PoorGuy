@@ -1,0 +1,5 @@
+[api]
+enabled = true
+
+[functions.waitlist]
+verify_jwt = false
