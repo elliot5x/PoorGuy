@@ -171,15 +171,43 @@ header {
 .support-card:nth-child(3) { transform: scale(.93) translateY(24px); opacity: .42; }
 .card-cover { height: clamp(150px, 48dvh, 250px); display: grid; place-items: center; background: radial-gradient(circle at 50% 35%, rgba(91,168,228,.22), transparent 52%), linear-gradient(145deg, #1c2530, #111218); }
 .card-avatar { width: 112px; height: 112px; display: grid; place-items: center; border: 1px solid rgba(255,255,255,.14); border-radius: 50%; color: var(--text); background: rgba(8,9,12,.5); font-size: 42px; }
-.card-body { position: relative; padding: 22px; }
+.card-body {
+    position: relative;
+    min-height: 270px;
+    padding: 22px 22px 18px;
+    box-sizing: border-box;
+}
 .card-bill { position: absolute; top: -16px; right: 18px; padding: 8px 12px; border-radius: 999px; color: #17140b; background: var(--gold); font-weight: 800; }
 .card-body h2 { margin: 0 0 4px; font-size: 28px; }
 .card-body > small { color: var(--muted); }
-.card-status { position: absolute; right: 22px; bottom: 18px; left: 22px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,.07); color: var(--muted); font-size: 11px; }
+.card-status {
+    position: static;
+    margin-top: 18px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255,255,255,.07);
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1.35;
+}
 .card-body p { margin: 18px 0 14px; color: #d5d7dc; line-height: 1.45; }
-.card-tags { display: flex; flex-wrap: wrap; gap: 7px; }
-.card-tags span { padding: 5px 8px; border-radius: 999px; color: var(--blue-light); background: rgba(91,168,228,.08); font-size: 11px; }
+.card-tags { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; }
+.card-tags span {
+    width: fit-content;
+    max-width: 100%;
+    padding: 5px 8px;
+    border-radius: 999px;
+    color: var(--blue-light);
+    background: rgba(91,168,228,.08);
+    font-size: 11px;
+    line-height: 1.2;
+    white-space: nowrap;
+}
 .card-tags .paid-tag {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 28px;
+    box-sizing: border-box;
     padding: 8px 12px;
     border: 1px solid rgba(255,255,255,.28);
     color: #fff;
@@ -387,10 +415,10 @@ footer nav a { text-decoration: none; }
     .deck { height: clamp(300px, calc(100svh - 270px), 430px); min-height: 300px; max-height: 430px; }
     .deck-actions { margin-top: 14px; }
     .card-cover { height: clamp(135px, 30svh, 210px); }
-    .card-body { padding: 16px; }
+    .card-body { min-height: 190px; padding: 16px; }
     .card-body h2 { font-size: 24px; }
     .card-body p { margin: 12px 0 10px; line-height: 1.35; }
-    .card-status { right: 16px; bottom: 14px; left: 16px; }
+    .card-status { margin-top: 14px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
