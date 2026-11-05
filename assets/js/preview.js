@@ -101,7 +101,35 @@ document.querySelector(".create-card-button").addEventListener("click", () => {
     document.querySelector("#published-card-amount-preview").textContent = `R$ ${randomAccountAmount}`;
     document.querySelector("#published-card-description-preview").textContent = description;
     preview.hidden = false;
-    preview.scrollIntoView({ behavior: "smooth", block: "center" });
+    if (!randomAccountAmount) randomAccountAmount = randomAmount();
+
+    const generatedProfile = {
+        initials: name.charAt(0).toUpperCase(),
+        name,
+        bill: `R$ ${randomAccountAmount}`,
+        amount: randomAccountAmount,
+        category,
+        reference: "Conta ilustrativa criada nesta sessão",
+        message: description,
+        tags: ["Criado por você", "Perfil ilustrativo"],
+        demoId: `criado-${Date.now()}`,
+        paid: false,
+        generated: true
+    };
+    generatedProfiles.push(generatedProfile);
+    profiles.push(generatedProfile);
+    if (generatedProfiles.length > 5) {
+        const oldest = generatedProfiles.shift();
+        const oldestIndex = profiles.indexOf(oldest);
+        if (oldestIndex >= 0) profiles.splice(oldestIndex, 1);
+    }
+    currentIndex = profiles.indexOf(generatedProfile);
+    renderCards();
+    updatePayButton();
+
+    const supportButton = document.querySelector('[data-mode="support"]');
+    supportButton.click();
+    document.querySelector(".support-panel").scrollIntoView({ behavior: "smooth", block: "start" });
 });
 
 document.querySelector(".download-qr").addEventListener("click", () => {
@@ -114,11 +142,13 @@ document.querySelector(".download-qr").addEventListener("click", () => {
     link.click();
 });
 
-const profiles = [
+let profiles = [
     { initials: "M", name: "Mariana, 31", bill: "R$ 180", amount: 180, category: "Energia elétrica", reference: "Conta ilustrativa de outubro/2026", message: "Estou tentando regularizar a conta da minha casa e retomar meus estudos com mais tranquilidade.", tags: ["Conta vencida há 12 dias", "Perfil ilustrativo"], demoId: "energia-01", paid: false },
     { initials: "R", name: "Renato, 28", bill: "R$ 240", amount: 240, category: "Internet", reference: "Conta ilustrativa de outubro/2026", message: "Preciso manter a conexão para continuar trabalhando e participar das aulas do curso técnico.", tags: ["Conta vencida há 20 dias", "Perfil ilustrativo"], demoId: "internet-01", paid: false },
     { initials: "L", name: "Luana, 35", bill: "R$ 125", amount: 125, category: "Medicamentos", reference: "Despesa ilustrativa de outubro/2026", message: "Minha intenção é reorganizar uma conta essencial sem expor mais dados do que o necessário.", tags: ["Necessidade comprovada", "Perfil ilustrativo"], demoId: "medicamentos-01", paid: false }
 ];
+
+const generatedProfiles = [];
 
 const deck = document.querySelector(".deck");
 const deckStatus = document.querySelector(".deck-status");
