@@ -1,34 +1,26 @@
 const modeButtons = document.querySelectorAll("[data-mode]");
 const panels = document.querySelectorAll("[data-panel]");
 
+function activatePreviewMode(mode) {
+    modeButtons.forEach((button) => {
+        const selected = button.dataset.mode === mode;
+        button.classList.toggle("active", selected);
+        button.setAttribute("aria-selected", String(selected));
+    });
+    panels.forEach((panel) => {
+        panel.classList.toggle("active", panel.dataset.panel === mode);
+    });
+}
+
 modeButtons.forEach((button) => {
     button.addEventListener("click", () => {
-        modeButtons.forEach((item) => {
-            const selected = item === button;
-            item.classList.toggle("active", selected);
-            item.setAttribute("aria-selected", String(selected));
-        });
-
-        function activatePreviewMode(mode) {
-            modeButtons.forEach((button) => {
-                const selected = button.dataset.mode === mode;
-                button.classList.toggle("active", selected);
-                button.setAttribute("aria-selected", String(selected));
-            });
-            panels.forEach((panel) => {
-                panel.classList.toggle("active", panel.dataset.panel === mode);
-            });
-        }
-        panels.forEach((panel) => panel.classList.toggle("active", panel.dataset.panel === button.dataset.mode));
+        activatePreviewMode(button.dataset.mode);
     });
 });
 
 const paymentForm = document.querySelector(".payment-form");
 const paymentInput = document.querySelector("#payment-link");
 const formError = document.querySelector(".form-error");
-const qrResult = document.querySelector(".qr-result");
-const qrContainer = document.querySelector("#payment-qr");
-let qrCode;
 
 const demoAccounts = {
     energy: { category: "Energia elétrica", link: "https://example.invalid/conta/energia", name: "Mariana, 31", description: "Estou buscando apoio para regularizar uma conta essencial." },
@@ -53,9 +45,7 @@ document.querySelectorAll("[data-demo]").forEach((button) => {
         document.querySelector("#published-card-description").value = selectedDemo.description;
         button.querySelector("small").textContent = `R$ ${randomAccountAmount}`;
         formError.textContent = "";
-        qrResult.hidden = true;
         document.querySelector(".published-card-builder").hidden = true;
-        document.querySelector(".published-card-preview").hidden = true;
     });
 });
 
@@ -76,22 +66,7 @@ paymentForm.addEventListener("submit", (event) => {
         return;
     }
 
-    if (typeof QRCode !== "function") {
-        formError.textContent = "Não foi possível carregar o gerador de QR code. Verifique sua conexão e tente novamente.";
-        return;
-    }
-
     formError.textContent = "";
-    qrContainer.replaceChildren();
-    qrCode = new QRCode(qrContainer, {
-        text: url.href,
-        width: 192,
-        height: 192,
-        colorDark: "#252a2d",
-        colorLight: "#ffffff",
-        correctLevel: QRCode.CorrectLevel.M
-    });
-    qrResult.hidden = false;
     if (!randomAccountAmount) randomAccountAmount = randomAmount();
     document.querySelector(".published-card-builder").hidden = false;
 });
@@ -104,14 +79,6 @@ document.querySelector(".create-card-button").addEventListener("click", () => {
         formError.textContent = "Preencha nome, tipo da conta e descrição para gerar o card.";
         return;
     }
-    const preview = document.querySelector(".published-card-preview");
-    preview.querySelector(".published-card-avatar").textContent = name.charAt(0).toUpperCase();
-    document.querySelector("#published-card-category-preview").textContent = category;
-    document.querySelector("#published-card-name-preview").textContent = name;
-    if (!randomAccountAmount) randomAccountAmount = randomAmount();
-    document.querySelector("#published-card-amount-preview").textContent = `R$ ${randomAccountAmount}`;
-    document.querySelector("#published-card-description-preview").textContent = description;
-    preview.hidden = true;
     if (!randomAccountAmount) randomAccountAmount = randomAmount();
 
     const generatedProfile = {
@@ -142,16 +109,6 @@ document.querySelector(".create-card-button").addEventListener("click", () => {
     requestAnimationFrame(() => {
         document.querySelector(".support-panel").scrollIntoView({ behavior: "smooth", block: "start" });
     });
-});
-
-document.querySelector(".download-qr").addEventListener("click", () => {
-    const qrImage = qrContainer.querySelector("img") || qrContainer.querySelector("canvas");
-    if (!qrImage) return;
-    const source = qrImage.tagName === "CANVAS" ? qrImage.toDataURL("image/png") : qrImage.src;
-    const link = document.createElement("a");
-    link.href = source;
-    link.download = "poorguy-conta.png";
-    link.click();
 });
 
 let profiles = [

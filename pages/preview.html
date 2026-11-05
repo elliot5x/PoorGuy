@@ -31,7 +31,7 @@
         <section class="preview-panel publish-panel active" data-panel="publish" aria-labelledby="publish-title">
             <div class="publish-copy">
                 <span class="eyebrow">Compartilhe sua necessidade</span>
-                <h1 id="publish-title">Transforme o link da conta em um QR code.</h1>
+                <h1 id="publish-title">Transforme o link da conta em um card ilustrativo.</h1>
                 <p>Use um link de pagamento público. Não envie CPF, endereço, dados bancários ou documentos.</p>
             </div>
 
@@ -48,23 +48,11 @@
                 <label for="payment-link">Link público de pagamento</label>
                 <div class="link-field">
                     <input id="payment-link" type="url" inputmode="url" placeholder="https://..." autocomplete="off" required>
-                    <button type="submit">Gerar QR <span>→</span></button>
+                    <button type="submit">Continuar <span>→</span></button>
                 </div>
                 <small>O link deve começar com https://</small>
                 <p class="form-error" role="alert"></p>
             </form>
-
-            <div class="qr-result" hidden>
-                <div>
-                    <span class="qr-status"><i></i> QR gerado localmente</span>
-                    <h2>Sua conta está pronta para ser compartilhada.</h2>
-                    <p>A leitura e a aprovação final podem ser feitas somente pelo responsável pelo link.</p>
-                </div>
-                <div class="qr-frame">
-                    <div id="payment-qr" aria-label="QR code do link de pagamento"></div>
-                </div>
-                <button class="download-qr" type="button">Baixar QR code</button>
-            </div>
 
             <div class="published-card-builder" hidden>
                 <span class="eyebrow">Monte seu card ilustrativo</span>
@@ -76,15 +64,6 @@
                 <textarea id="published-card-description" maxlength="180" rows="3">Estou buscando apoio para regularizar uma conta essencial.</textarea>
                 <button class="create-card-button" type="button">Gerar card <span>✦</span></button>
             </div>
-
-            <article class="published-card-preview" hidden>
-                <span class="published-card-status">Perfil ilustrativo</span>
-                <div class="published-card-avatar">M</div>
-                <span class="eyebrow" id="published-card-category-preview"></span>
-                <strong id="published-card-name-preview"></strong>
-                <span class="published-card-amount" id="published-card-amount-preview"></span>
-                <p id="published-card-description-preview"></p>
-            </article>
         </section>
 
         <section class="preview-panel support-panel" data-panel="support" aria-labelledby="support-title">

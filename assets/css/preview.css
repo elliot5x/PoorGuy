@@ -111,15 +111,15 @@ header {
 .link-field { display: grid; grid-template-columns: 1fr auto; gap: 6px; }
 .link-field input { min-width: 0; min-height: 48px; padding: 0 14px; border: 1px solid transparent; border-radius: 8px; outline: 0; color: var(--text); background: var(--bg); }
 .link-field input:focus { border-color: rgba(91,168,228,.55); }
-.link-field button, .download-qr, .deck-status button {
+.link-field button, .deck-status button {
     min-height: 48px; padding: 0 18px; border: 0; border-radius: 8px; color: #17140b; background: var(--gold); cursor: pointer; font-weight: 800;
     transition: transform 180ms ease, box-shadow 180ms ease;
 }
-.link-field button:hover, .download-qr:hover, .deck-status button:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(216,168,78,.18); }
+.link-field button:hover, .deck-status button:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(216,168,78,.18); }
 .payment-form > small { display: block; margin: 8px 8px 4px; color: var(--muted); }
 .form-error { margin: 8px; color: #f59b9b; font-size: 13px; }
 
-.published-card-builder[hidden], .published-card-preview[hidden] { display: none; }
+.published-card-builder[hidden] { display: none; }
 .published-card-builder { margin-top: 20px; padding: 22px; border: 1px solid var(--border); border-radius: 16px; background: rgba(17,18,24,.86); }
 .published-card-builder > label { margin-top: 14px; }
 .published-card-builder label { display: grid; gap: 7px; color: var(--muted); font-size: 12px; }
@@ -154,34 +154,6 @@ header {
 .create-card-button span { margin-left: 8px; }
 .create-card-button:hover { transform: translateY(-4px) scale(1.01); filter: brightness(1.08); box-shadow: 0 22px 48px rgba(216,168,78,.28), 0 0 0 5px rgba(216,168,78,.08); }
 .create-card-button:active { transform: translateY(-1px) scale(.99); }
-.published-card-preview {
-    position: relative;
-    width: min(330px, 100%);
-    margin: 24px auto 0;
-    padding: 24px;
-    display: grid;
-    gap: 8px;
-    border: 1px solid rgba(216,168,78,.38);
-    border-radius: 20px;
-    background: linear-gradient(145deg, rgba(91,168,228,.08), transparent 55%), var(--surface-2);
-    box-shadow: 0 30px 70px rgba(0,0,0,.38);
-    text-align: center;
-}
-.published-card-status { justify-self: end; padding: 6px 9px; border-radius: 999px; color: var(--blue-light); background: rgba(91,168,228,.09); font-size: 10px; font-weight: 800; text-transform: uppercase; }
-.published-card-avatar { width: 92px; height: 92px; margin: 4px auto 10px; display: grid; place-items: center; border-radius: 50%; color: var(--text); background: rgba(91,168,228,.12); font-size: 36px; }
-.published-card-preview > strong { font-size: 25px; }
-.published-card-amount { color: var(--gold); font-size: 22px; font-weight: 900; }
-.published-card-preview p { margin: 8px 0 0; color: #d5d7dc; line-height: 1.45; }
-
-.qr-result { margin-top: 20px; padding: 28px; display: grid; grid-template-columns: 1fr 220px; gap: 24px; align-items: center; border: 1px solid rgba(91,168,228,.22); border-radius: 16px; background: linear-gradient(145deg, rgba(91,168,228,.06), transparent 55%), var(--surface); }
-.qr-result h2 { margin: 12px 0 8px; font-size: 28px; }
-.qr-result p { margin: 0; color: var(--muted); font-size: 14px; }
-.qr-status { color: var(--green); font-size: 12px; }
-.qr-status i { width: 7px; height: 7px; margin-right: 7px; display: inline-block; border-radius: 50%; background: var(--green); }
-.qr-frame { padding: 14px; border-radius: 12px; background: white; }
-#payment-qr { width: 192px; height: 192px; }
-#payment-qr img, #payment-qr canvas { width: 192px !important; height: 192px !important; }
-.download-qr { grid-column: 1 / -1; }
 
 .support-heading { max-width: 900px; margin: 0 auto 28px; display: grid; grid-template-columns: 1fr 280px; align-items: end; gap: 50px; }
 .support-heading h1 { font-size: clamp(2.8rem, 6vw, 4.6rem); }
@@ -400,7 +372,6 @@ footer nav a { text-decoration: none; }
     .demo-link-picker > div { grid-template-columns: 1fr; }
     .demo-link-picker button { min-height: 58px; }
     .published-card-fields { grid-template-columns: 1fr; }
-    .qr-result { grid-template-columns: 1fr; text-align: center; }
     .qr-frame { margin: auto; }
     .support-heading { grid-template-columns: 1fr; gap: 12px; }
     .support-heading > p { margin-left: 0; }
