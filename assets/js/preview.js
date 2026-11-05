@@ -23,12 +23,38 @@ const paymentInput = document.querySelector("#payment-link");
 const formError = document.querySelector(".form-error");
 
 const demoAccounts = {
-    energy: { category: "Energia elétrica", link: "https://example.invalid/conta/energia", name: "Mariana, 31", description: "Estou buscando apoio para regularizar uma conta essencial." },
-    internet: { category: "Internet", link: "https://example.invalid/conta/internet", name: "Renato, 28", description: "Preciso manter a conexão para continuar o trabalho e os estudos." },
-    health: { category: "Saúde", link: "https://example.invalid/conta/saude", name: "Luana, 35", description: "Quero reorganizar uma despesa de saúde com transparência." }
+    energy: { category: "energia", link: "https://example.invalid/conta/energia", name: "Mariana, 31", description: "Estou buscando apoio para regularizar uma conta essencial." },
+    internet: { category: "internet", link: "https://example.invalid/conta/internet", name: "Renato, 28", description: "Preciso manter a conexão para continuar o trabalho e os estudos." },
+    health: { category: "remedios", link: "https://example.invalid/conta/saude", name: "Luana, 35", description: "Quero reorganizar uma despesa de saúde com transparência." }
 };
+const accountCategories = Object.freeze({
+    energia: "Energia",
+    agua: "Água",
+    internet: "Internet",
+    aluguel: "Aluguel",
+    remedios: "Remédios",
+    alimentacao: "Alimentação",
+    outro: "Outro"
+});
 let selectedDemo = null;
 let randomAccountAmount = 0;
+const publishedCategory = document.querySelector("#published-card-category");
+const publishedDescription = document.querySelector("#published-card-description");
+const categoryReviewNote = document.querySelector(".category-review-note");
+const descriptionCounter = document.querySelector("#description-counter");
+
+function updateDescriptionCounter() {
+    descriptionCounter.textContent = `${publishedDescription.value.length}/140`;
+}
+
+function updateCategoryReviewNote() {
+    categoryReviewNote.hidden = publishedCategory.value !== "outro";
+}
+
+publishedCategory.addEventListener("change", updateCategoryReviewNote);
+publishedDescription.addEventListener("input", updateDescriptionCounter);
+updateDescriptionCounter();
+updateCategoryReviewNote();
 
 function randomAmount() {
     const values = [85, 120, 175, 210, 240, 280, 350, 420];
@@ -41,7 +67,8 @@ document.querySelectorAll("[data-demo]").forEach((button) => {
         randomAccountAmount = randomAmount();
         paymentInput.value = `${selectedDemo.link}?valor=${randomAccountAmount}`;
         document.querySelector("#published-card-name").value = selectedDemo.name;
-        document.querySelector("#published-card-category").value = selectedDemo.category;
+        publishedCategory.value = selectedDemo.category;
+        updateCategoryReviewNote();
         document.querySelector("#published-card-description").value = selectedDemo.description;
         button.querySelector("small").textContent = `R$ ${randomAccountAmount}`;
         formError.textContent = "";
@@ -74,23 +101,28 @@ paymentForm.addEventListener("submit", (event) => {
 
 document.querySelector(".create-card-button").addEventListener("click", () => {
     const name = document.querySelector("#published-card-name").value.trim();
-    const category = document.querySelector("#published-card-category").value.trim();
+    const category = publishedCategory.value.trim();
     const description = document.querySelector("#published-card-description").value.trim();
     if (!name || !category || !description) {
         formError.textContent = "Preencha nome, tipo da conta e descrição para gerar o card.";
         return;
     }
     if (!randomAccountAmount) randomAccountAmount = randomAmount();
+    if (!Object.hasOwn(accountCategories, category)) {
+        formError.textContent = "Selecione uma categoria válida para o tipo da conta.";
+        publishedCategory.focus();
+        return;
+    }
 
     const generatedProfile = {
         initials: name.charAt(0).toUpperCase(),
         name,
         bill: `R$ ${randomAccountAmount}`,
         amount: randomAccountAmount,
-        category,
+        category: accountCategories[category],
         reference: "Conta ilustrativa criada nesta sessão",
         message: description,
-        tags: ["Criado por você", "Perfil ilustrativo"],
+        tags: ["Criado por você", "Demonstração"],
         demoId: `criado-${Date.now()}`,
         paid: false,
         generated: true
@@ -145,20 +177,54 @@ function renderCards() {
         const card = document.createElement("article");
         card.className = `support-card${profile.paid ? " is-paid" : ""}`;
         card.style.zIndex = String(profiles.length - position);
-        card.innerHTML = `
-            <div class="support-card-inner">
-                <div class="support-card-face support-card-front">
-                    <div class="card-cover"><div class="card-avatar">${profile.initials}</div></div>
-                    <div class="card-body">
-                        <span class="card-bill">${profile.bill}</span>
-                        <span class="eyebrow">${profile.category}</span>
-                        <h2>${profile.name}</h2>
-                        <small>Solicitação ilustrativa</small>
-                        <p>${profile.message}</p>
-                        <div class="card-tags">${profile.paid ? '<span class="paid-tag">Pago</span>' : ""}${profile.tags.map((tag) => `<span>${tag}</span>`).join("")}</div>
-                    </div>
-                </div>
-            </div>`;
+        const inner = document.createElement("div");
+        inner.className = "support-card-inner";
+        const face = document.createElement("div");
+        face.className = "support-card-face support-card-front";
+        const cover = document.createElement("div");
+        cover.className = "card-cover";
+        const avatar = document.createElement("div");
+        avatar.className = "card-avatar";
+        avatar.textContent = profile.initials;
+        cover.append(avatar);
+        const body = document.createElement("div");
+        body.className = "card-body";
+        const bill = document.createElement("span");
+        bill.className = "card-bill";
+        bill.textContent = profile.bill;
+        const eyebrow = document.createElement("span");
+        eyebrow.className = "eyebrow";
+        eyebrow.textContent = profile.category;
+        const name = document.createElement("h2");
+        name.textContent = profile.name;
+        const message = document.createElement("p");
+        message.textContent = profile.message;
+        const tags = document.createElement("div");
+        tags.className = "card-tags";
+        if (profile.paid) {
+            const paidTag = document.createElement("span");
+            paidTag.className = "paid-tag";
+            paidTag.textContent = "Pago";
+            tags.append(paidTag);
+        }
+        profile.tags.forEach((tag) => {
+            if (tag === "Perfil ilustrativo") return;
+            const tagElement = document.createElement("span");
+            tagElement.textContent = tag;
+            tags.append(tagElement);
+        });
+        if (!profile.generated) {
+            const profileTag = document.createElement("span");
+            profileTag.textContent = "Perfil ilustrativo";
+            tags.append(profileTag);
+        }
+        const status = document.createElement("small");
+        status.className = "card-status";
+        status.textContent = profile.generated ? (profile.paid ? "Pago" : "Em análise") : (profile.paid ? "Pago" : "Aguardando apoio");
+        body.append(bill, eyebrow, name, message, tags, status);
+        face.append(cover, body);
+        inner.append(face);
+        card.append(inner);
         makeDraggable(card);
         deck.append(card);
     });
@@ -207,6 +273,11 @@ function makeDraggable(card) {
 }
 
 document.querySelector(".deck-button.pass").addEventListener("click", () => advanceCard(-1));
+document.querySelectorAll(".deck-button").forEach((button) => {
+    button.addEventListener("focus", () => {
+        button.scrollIntoView({ block: "nearest", inline: "nearest" });
+    });
+});
 const paymentOverlay = document.querySelector(".payment-overlay");
 const paymentSheet = document.querySelector(".payment-sheet");
 const paymentTitle = document.querySelector("#payment-title");

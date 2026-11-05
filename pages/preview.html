@@ -58,10 +58,25 @@
                 <span class="eyebrow">Monte seu card ilustrativo</span>
                 <div class="published-card-fields">
                     <label>Nome <input id="published-card-name" type="text" maxlength="40" value="Mariana, 31"></label>
-                    <label>Tipo da conta <input id="published-card-category" type="text" maxlength="40" value="Energia elétrica"></label>
+                    <label for="published-card-category">Tipo da conta
+                        <select id="published-card-category">
+                            <option value="energia">Energia</option>
+                            <option value="agua">Água</option>
+                            <option value="internet">Internet</option>
+                            <option value="aluguel">Aluguel</option>
+                            <option value="remedios">Remédios</option>
+                            <option value="alimentacao">Alimentação</option>
+                            <option value="outro">Outro (exige análise)</option>
+                        </select>
+                    </label>
                 </div>
+                <p class="category-review-note" role="status" hidden>Na plataforma real, este pedido passaria por análise e só contas essenciais seriam elegíveis.</p>
                 <label for="published-card-description">Descrição</label>
-                <textarea id="published-card-description" maxlength="180" rows="3">Estou buscando apoio para regularizar uma conta essencial.</textarea>
+                <textarea id="published-card-description" maxlength="140" rows="3" aria-describedby="description-note description-counter">Estou buscando apoio para regularizar uma conta essencial.</textarea>
+                <div class="description-meta">
+                    <small id="description-note">Descreva uma conta essencial. Pedidos que não sejam de necessidade básica não seriam aprovados na verificação real.</small>
+                    <span id="description-counter">72/140</span>
+                </div>
                 <button class="create-card-button" type="button">Gerar card <span>✦</span></button>
             </div>
         </section>

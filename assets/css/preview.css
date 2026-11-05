@@ -123,7 +123,7 @@ header {
 .published-card-builder { margin-top: 20px; padding: 22px; border: 1px solid var(--border); border-radius: 16px; background: rgba(17,18,24,.86); }
 .published-card-builder > label { margin-top: 14px; }
 .published-card-builder label { display: grid; gap: 7px; color: var(--muted); font-size: 12px; }
-.published-card-builder input, .published-card-builder textarea {
+.published-card-builder input, .published-card-builder select, .published-card-builder textarea {
     width: 100%;
     padding: 12px;
     border: 1px solid rgba(255,255,255,.08);
@@ -134,7 +134,11 @@ header {
     font: inherit;
     resize: vertical;
 }
-.published-card-builder input:focus, .published-card-builder textarea:focus { border-color: rgba(91,168,228,.55); }
+.published-card-builder input:focus, .published-card-builder select:focus, .published-card-builder textarea:focus { border-color: rgba(91,168,228,.55); }
+.published-card-builder select { min-height: 43px; cursor: pointer; }
+.category-review-note { margin: 10px 0 0; color: #e6c985; font-size: 12px; line-height: 1.45; }
+.description-meta { margin-top: 6px; display: grid; grid-template-columns: 1fr auto; gap: 12px; color: var(--muted); line-height: 1.4; }
+.description-meta span { color: var(--gold); white-space: nowrap; }
 .published-card-fields { margin-top: 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .create-card-button {
     position: relative;
@@ -159,18 +163,19 @@ header {
 .support-heading h1 { font-size: clamp(2.8rem, 6vw, 4.6rem); }
 .support-heading > p { font-size: 14px; }
 .deck-wrap { width: min(430px, 100%); margin: 0 auto; }
-.deck { position: relative; height: 520px; perspective: 1200px; }
+.deck { position: relative; height: clamp(300px, calc(100dvh - 360px), 520px); min-height: 300px; max-height: 520px; perspective: 1200px; }
 .support-card { position: absolute; inset: 0; overflow: hidden; border: 1px solid var(--border); border-radius: 22px; background: var(--surface-2); box-shadow: 0 30px 80px rgba(0,0,0,.48); transform-origin: 50% 100%; touch-action: none; transition: transform 280ms cubic-bezier(.22,1,.36,1), opacity 280ms ease; perspective: 1200px; }
 .support-card-inner { position: absolute; inset: 0; }
 .support-card-face { position: absolute; inset: 0; overflow: hidden; border-radius: inherit; }
 .support-card:nth-child(2) { transform: scale(.965) translateY(12px); opacity: .72; }
 .support-card:nth-child(3) { transform: scale(.93) translateY(24px); opacity: .42; }
-.card-cover { height: 250px; display: grid; place-items: center; background: radial-gradient(circle at 50% 35%, rgba(91,168,228,.22), transparent 52%), linear-gradient(145deg, #1c2530, #111218); }
+.card-cover { height: clamp(150px, 48dvh, 250px); display: grid; place-items: center; background: radial-gradient(circle at 50% 35%, rgba(91,168,228,.22), transparent 52%), linear-gradient(145deg, #1c2530, #111218); }
 .card-avatar { width: 112px; height: 112px; display: grid; place-items: center; border: 1px solid rgba(255,255,255,.14); border-radius: 50%; color: var(--text); background: rgba(8,9,12,.5); font-size: 42px; }
 .card-body { position: relative; padding: 22px; }
 .card-bill { position: absolute; top: -16px; right: 18px; padding: 8px 12px; border-radius: 999px; color: #17140b; background: var(--gold); font-weight: 800; }
 .card-body h2 { margin: 0 0 4px; font-size: 28px; }
 .card-body > small { color: var(--muted); }
+.card-status { position: absolute; right: 22px; bottom: 18px; left: 22px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,.07); color: var(--muted); font-size: 11px; }
 .card-body p { margin: 18px 0 14px; color: #d5d7dc; line-height: 1.45; }
 .card-tags { display: flex; flex-wrap: wrap; gap: 7px; }
 .card-tags span { padding: 5px 8px; border-radius: 999px; color: var(--blue-light); background: rgba(91,168,228,.08); font-size: 11px; }
@@ -186,7 +191,7 @@ header {
     text-transform: uppercase;
 }
 .support-card.is-paid .card-bill { border: 1px solid rgba(255,255,255,.24); }
-.deck-actions { margin-top: 26px; display: flex; justify-content: center; gap: 16px; }
+.deck-actions { position: sticky; bottom: calc(12px + env(safe-area-inset-bottom)); z-index: 20; margin-top: 26px; padding-bottom: env(safe-area-inset-bottom); display: flex; justify-content: center; gap: 16px; }
 .deck-button { height: 58px; min-width: 58px; border: 1px solid var(--border); border-radius: 999px; color: var(--text); background: rgba(17,18,24,.88); cursor: pointer; font-size: 30px; transition: transform 180ms ease, background 180ms ease; }
 .deck-button.pay {
     position: relative;
@@ -375,8 +380,17 @@ footer nav a { text-decoration: none; }
     .qr-frame { margin: auto; }
     .support-heading { grid-template-columns: 1fr; gap: 12px; }
     .support-heading > p { margin-left: 0; }
-    .deck { height: 500px; }
-    .card-cover { height: 230px; }
+    .preview-app { padding-bottom: 24px; }
+    .support-heading { margin-bottom: 16px; }
+    .support-heading h1 { margin: 8px 0 0; font-size: 2.05rem; }
+    .support-heading > p { display: none; }
+    .deck { height: clamp(300px, calc(100svh - 270px), 430px); min-height: 300px; max-height: 430px; }
+    .deck-actions { margin-top: 14px; }
+    .card-cover { height: clamp(135px, 30svh, 210px); }
+    .card-body { padding: 16px; }
+    .card-body h2 { font-size: 24px; }
+    .card-body p { margin: 12px 0 10px; line-height: 1.35; }
+    .card-status { right: 16px; bottom: 14px; left: 16px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
