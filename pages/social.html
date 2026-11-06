@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rede PoorGuy</title>
+    <link rel="icon" type="image/png" href="../assets/images/logo-white.png">
+    <link rel="stylesheet" href="../assets/css/social.css">
+</head>
+<body>
+    <aside class="social-sidebar" aria-label="Navegação da rede">
+        <a class="social-brand" href="../index.html" aria-label="Voltar ao site PoorGuy">
+            <img src="../assets/images/logoname-white.png" alt="PoorGuy">
+        </a>
+        <nav class="social-nav">
+            <a class="active" href="#recentes" aria-current="page"><span>⌂</span> Recentes</a>
+            <a href="#descobrir"><span>⌕</span> Descobrir</a>
+        </nav>
+        <div class="sidebar-bottom">
+            <button class="settings-button" type="button" aria-expanded="false">
+                <span>⚙</span> Configurações
+            </button>
+            <button class="sidebar-login" type="button" data-login-open>Entrar</button>
+        </div>
+        <div class="settings-panel" hidden>
+            <strong>Preferências</strong>
+            <label><input type="checkbox" checked> Mostrar publicações recentes</label>
+            <small>Mais opções estarão disponíveis com sua conta.</small>
+        </div>
+    </aside>
+
+    <main class="social-main" id="recentes">
+        <header class="social-header">
+            <div>
+                <span class="eyebrow">Comunidade PoorGuy</span>
+                <h1>Publicações recentes</h1>
+            </div>
+            <button class="mobile-login" type="button" data-login-open>Entrar</button>
+        </header>
+
+        <section class="feed" id="descobrir" aria-label="Publicações recentes">
+            <article class="request-card">
+                <div class="request-cover cover-energy"><span>M</span></div>
+                <div class="request-content">
+                    <div class="request-meta"><span class="request-category">Energia elétrica</span><span>há 2 min</span></div>
+                    <h2>Mariana, 31</h2>
+                    <p>Estou regularizando a conta da minha casa para continuar meus estudos com tranquilidade.</p>
+                    <div class="request-footer"><strong>R$ 180</strong><span>Aguardando apoio</span></div>
+                </div>
+            </article>
+            <article class="request-card">
+                <div class="request-cover cover-internet"><span>R</span></div>
+                <div class="request-content">
+                    <div class="request-meta"><span class="request-category">Internet</span><span>há 18 min</span></div>
+                    <h2>Renato, 28</h2>
+                    <p>Preciso manter a conexão para trabalhar e participar das aulas do curso técnico.</p>
+                    <div class="request-footer"><strong>R$ 240</strong><span>Aguardando apoio</span></div>
+                </div>
+            </article>
+            <article class="request-card">
+                <div class="request-cover cover-health"><span>L</span></div>
+                <div class="request-content">
+                    <div class="request-meta"><span class="request-category">Medicamentos</span><span>há 1 h</span></div>
+                    <h2>Luana, 35</h2>
+                    <p>Quero reorganizar uma despesa essencial e retomar o acompanhamento de saúde.</p>
+                    <div class="request-footer"><strong>R$ 125</strong><span>Em análise</span></div>
+                </div>
+            </article>
+        </section>
+    </main>
+
+    <div class="login-overlay" hidden>
+        <section class="login-dialog" role="dialog" aria-modal="true" aria-labelledby="login-title">
+            <button class="login-close" type="button" aria-label="Fechar">×</button>
+            <span class="eyebrow">Conta PoorGuy</span>
+            <h2 id="login-title">Entre na rede</h2>
+            <p>Crie uma conta ou conecte uma conta existente.</p>
+            <div class="login-providers">
+                <button type="button">Continuar com Google</button>
+                <button type="button">Continuar com GitHub</button>
+            </div>
+            <div class="login-divider">ou com e-mail</div>
+            <form class="login-form">
+                <label>E-mail<input type="email" autocomplete="email" required></label>
+                <label>Senha<input type="password" autocomplete="current-password" minlength="8" required></label>
+                <button type="submit">Entrar</button>
+                <p class="login-status" role="status"></p>
+            </form>
+        </section>
+    </div>
+    <script src="../assets/js/social.js"></script>
+</body>
+</html>
